@@ -146,7 +146,7 @@ pars = sp.Matrix(list(I0) + list(I1) + list(I2))
 pars_c, st_cnc_pars = nct.make_all_symbols_commutative(pars)
 
 
-JE = eq3.jacobian(pars_c
+JE = eq3.jacobian(pars_c)
 
 # Vermutung: ich habe mehr Gleichungen als Variablen. Weil die
 # allermeisten Gleichungen aber homogen sind, ist das kein prinzipielles
