@@ -39,7 +39,7 @@ z2 = y2
 ZZ = ZZ1 = sp.Matrix([z1, z2])
 
 # 2. Stufe
-xi1 = z1s
+xi1 = z1
 xi2 = z2 * st.perform_time_derivative(z1, yya, commutative=False)
 
 # damit wird weitergerechnet
