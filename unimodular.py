@@ -39,7 +39,7 @@ z2 = y2
 ZZ = ZZ1 = sp.Matrix([z1, z2])
 
 # 2. Stufe
-xi1 = z1
+xi1 = z1s
 xi2 = z2 * st.perform_time_derivative(z1, yya, commutative=False)
 
 # damit wird weitergerechnet
@@ -56,6 +56,8 @@ Y2 = Z2
 YY = sp.Matrix([Y1, Y2])
 assert YY == yy
 
+# Zu dieser Abbildung möchte ich die Jacobi-Matrix bestimmen und für
+# einen generischen Punkt prüfen, ob sie unimodular ist.
 
 yya.reshape(5, 2)
 
@@ -82,6 +84,11 @@ def lie_baeck_jacobi_matrix(ZZ, yya, ny):
 # diese matrix sollte unimodular sein. d.h. sie sollte eine polynommatirx
 # in s als inverse haben --> mit der determinante kann man das scheinbar
 # nicht zeigen
+
+# neues Fazit: Ich muss Unimodularität anders überprüfen
+# Aussage von Prof. Rudolph: Dann kann man Unimodularität hier nicht mit
+# der Determinante testen
+
 P = lie_baeck_jacobi_matrix(ZZ, yya, 2)
 
 J1 = lie_baeck_jacobi_matrix(ZZ1, yya, 2)
@@ -139,7 +146,12 @@ pars = sp.Matrix(list(I0) + list(I1) + list(I2))
 pars_c, st_cnc_pars = nct.make_all_symbols_commutative(pars)
 
 
-JE = eq3.jacobian(pars_c)
+JE = eq3.jacobian(pars_c
+
+# Vermutung: ich habe mehr Gleichungen als Variablen. Weil die
+# allermeisten Gleichungen aber homogen sind, ist das kein prinzipielles
+# Problem... am besten wäre es, wenn in den inhomogenen Gleichungen
+# Koeffizienten auftauchen, die die sonst nirgendwo auftauchen
 
 # Homogene gleichungen rausfinden
 eq3_0 = eq3.subs(st.zip0(pars_c))
@@ -161,6 +173,10 @@ JEh = JEh.expand()
 kk = st.nullspaceMatrix(JEh)
 
 k1, k2 = st.col_split(kk)
+
+# gut: das homogene GS kann ich erfüllen
+# Hoffnung: ich kann jetzt auch noch das inhomogene GS erfüllen
+
 
 K = a1*k1 + a2*k2
 eq6 = eq5.subs(zip(pars_c, K))
@@ -205,3 +221,8 @@ r2 = nct.right_shift_all(r, s, t, yy)
 test3 = st.subs_random_numbers(r2) # sollte auch einheitsmatrix sein
 
 embed()
+
+
+def is_unimodular(transformation_matrix):
+    
+    pass
