@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import sympy as sp
+import numpy as np
 import symb_tools as st
 import non_commutative_tools as nct
 
@@ -75,6 +76,8 @@ def lie_baeck_jacobi_matrix(ZZ, yya, ny):
     # each row contains one derivative oder
     yyam = yya.reshape(int(N), ny)
     
+    print(yyam)
+    
     # now convert to list of rows    
     for i, vv in enumerate( yyam.tolist() ):
         #print vv, i
@@ -92,7 +95,8 @@ def lie_baeck_jacobi_matrix(ZZ, yya, ny):
 P = lie_baeck_jacobi_matrix(ZZ, yya, 2)
 
 J1 = lie_baeck_jacobi_matrix(ZZ1, yya, 2)
-J2 = lie_baeck_jacobi_matrix(ZZ2, yya, 2)
+J2 = lie_baeck_jacobi_matrix(ZZ2, yya, 2) # J2==P -> True
+
 
 # Jetzt versuche ich eine Inverse für P zu konstruieren
 # bzw. erstmal für J2
@@ -222,7 +226,84 @@ test3 = st.subs_random_numbers(r2) # sollte auch einheitsmatrix sein
 
 embed()
 
+def create_parameter_inverse(param):
+    I0 = st.symbMatrix(n,n, 'a', commutative=False)
+    I1 = st.symbMatrix(n,n, 'b', commutative=False)
+    I2 = st.symbMatrix(n,n, 'c', commutative=False)
 
-def is_unimodular(transformation_matrix):
+    M = I0 + I1*s + I2*s**2
+    return M
+
+
+def is_square_matrix(matrix):
+    """ duplicate from algorithmus_franke.py
+    """
+    m, n = matrix.shape
+    return True if (m==n) else False
+
+def is_unit_matrix(matrix):
+    """ duplicate from algorithmus_franke.py
+    """
+    assert is_square_matrix(matrix), "Matrix is not a square matrix."
+    m, n = matrix.shape
+    m_rand = st.subs_random_numbers(matrix)
+
+    for i in xrange(len(m_rand)):
+        if i%(m+1)==0:
+            if not np.allclose(float(m_rand[i]), 1):
+                return False
+        else:
+            if not np.allclose(float(m_rand[i]), 0):
+                return False
+    return True
+
+def get_homogeneous_equation(eq, pars_c):
+    eq_0 = eq.subs(st.zip0(pars_c))
+
+    # indices:
+    inhom_idcs = st.np.where(st.to_np(eq3_0) != 0)[0]
+    hom_idcs = st.np.where(st.to_np(eq3_0) == 0)[0]
+
+    # Homogene und Inhomogene Gleichungen trennen
+    eq4 = sp.Matrix(st.np.array(eq3)[hom_idcs])
+    eq5 = sp.Matrix(st.np.array(eq3)[inhom_idcs])
+
+    JEh = eq4.jacobian(pars_c)
+    JEh = JEh.expand()
+    kk = st.nullspaceMatrix(JEh)
+    k1, k2 = st.col_split(kk)
     
+    return kk
+
+    # Probe
+    assert eq4.subs(st.zip0(pars_c)) == eq4*0
+
+    return hom_idcs
+
+def is_unimodular(jacobi_matrix):
+    # konstruktion einer inversen
+    inverse = create_parameter_inverse()
+
+    R = nct.nc_mul(M, J2).subs(zip(yya, yyaf)) - sp.eye(M.shape[0])
+    eq = list(R)
+
+    tmp = M*J2 - nct.nc_mul(M, J2)
+    tmp.simplify()
+    assert tmp == tmp*0
+
+    eq2 = [nct.right_shift_all(e, s, t) for e in eq]
+
+    back_subs = list(reversed(zip(yyaf, yya)))
+
+    eq1_symb = [e.subs(back_subs) for e in eq]
+    eq2_test = sp.Matrix([nct.right_shift_all(e, s, t, yya) for e in eq1_symb])
+
+    # Funktionen wieder durch Symbole ersetzen
+    eq2 = sp.Matrix(eq2).subs(back_subs)
+
+    kk = get_homogeneous_equation(eq2, pars_c)
+
+    # probe
+    #is_unit_matrix()
+
     pass
