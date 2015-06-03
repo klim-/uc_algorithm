@@ -49,6 +49,14 @@ class InteractiveConvenienceTest(unittest.TestCase):
         res_4 = um.is_unit_matrix(matrix_4)
         self.assertEqual(res_4, False)
 
+    def test_is_zero_matrix_1(self):
+        matrix_1 = sp.Matrix([
+        [1.01389201174282e-13,   7.105427357601e-15],
+        [1.04333429557543e-17, 5.63091748710959e-18]])
+        
+        res_1 = um.is_zero_matrix(matrix_1)
+        self.assertEqual(res_1, True)
+
 
 def main():
     unittest.main()
