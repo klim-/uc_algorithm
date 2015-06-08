@@ -36,7 +36,7 @@ roc = "alt"
 # read system from file: -----------------------------------------------
 
 #from ex.franke_511 import * # (4.7) akad. bsp. 1
-from ex.franke_512 import * # akad. bsp. 2
+#from ex.franke_512 import * # akad. bsp. 2
 #from ex.franke_513 import * # (4.7) akad. bsp. 3 ( w[0].d^w[0] = 0 )
 #from ex.franke_514 import * # (4.7) akad. bsp. 4 ( w[0].d^w[1].d^w[1] und w[1].d^w[0].d^w[1] )
 #from ex.franke_515 import * # (4.7) brockett-integrator ( w[0].d^w[0]^w[1] = 0 )
@@ -47,7 +47,7 @@ from ex.franke_512 import * # akad. bsp. 2
 #from ex.franke_5110 import * # senkrechtstarter (komplizierter!)
 #from ex.franke_5111 import * # (4.7) rollendes rad
 
-#from ex.konfigurationsflachheit import * # (dw=0)
+from ex.konfigurationsflachheit import * # (dw=0)
 #from ex.non_flat_example_levine import *
 #from ex.martin_gegenbeispiel import *
 
@@ -106,6 +106,18 @@ def has_right_ortho_complement(matrix):
     return True
 
 def left_pseudo_inverse(matrix):
+    m, n = matrix.shape
+    r = srank(matrix)
+    assert r==n, "Matrix does not have full column rank!"
+
+    transposed_rpinv = right_pseudo_inverse(matrix.T)
+    matrix_lpinv = transposed_rpinv.T
+
+    assert is_unit_matrix(matrix_lpinv*matrix), "Leftpseudoinverse is not correct."
+
+    return matrix_lpinv
+
+def old_left_pseudo_inverse(matrix):
     m, n = matrix.shape
     #r = matrix.rank()
     r = srank(matrix)
@@ -687,11 +699,14 @@ def fourseven(Ai, Bi, P1i_roc, P1i_rpinv, i):
 
 def elimination(Ai, Bi, i):
     Bi_loc = left_ortho_complement(Bi)
+    Bi_lpinv = left_pseudo_inverse(Bi)
+
     P1i_new = Bi_loc
     P0i_new = Bi_loc*Ai
 
     # print matrices
     print_matrix("B",i,"_loc",Bi_loc)
+    print_matrix("B",i,"_lpinv",Bi_lpinv)
 
     return P1i_new, P0i_new
 
