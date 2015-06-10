@@ -24,11 +24,15 @@ class IterationStack(object):
         self.B = None
         self.B_loc = None
         self.B_lpinv = None
-        self.B_tilde = None
 
         ## outlier 4.7
         self.Z = None
         self.Z_lpinv = None
+        self.B_tilde = None
+        self.B_tilde_lpinv = None
+        self.P1_tilde_roc = None
+
+        self.Gi = None
 
     def print_stack(self):
         print_next_iteration(self.i)

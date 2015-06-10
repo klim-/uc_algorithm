@@ -271,6 +271,37 @@ def alternative_right_ortho_complement(P):
     
     #return transform_l, diag, transform_r
 
+def Zi_left_pinv_with_restrictions(Zi, P1i_tilde_right_ortho, P1i_right_pseudo_inv):
+    """ Given a matrix Zi, this function calculates a matrix such that:
+            Zi_left_pinv * Zi                    = I
+            Zi_left_pinv * P1i_tilde_right_ortho = 0
+            Zi_left_pinv * P1i_right_pseudo_inv  = 0
+    """
+    assert check_row_compatibility(Zi, P1i_tilde_right_ortho, P1i_right_pseudo_inv),\
+        "Matrices do not match in row dimension."
+
+    C = st.concat_cols(Zi, P1i_tilde_right_ortho, P1i_right_pseudo_inv)
+
+    assert is_regular_matrix(C), "C is not a regular matrix"
+    C_det = C.berkowitz_det()
+    C_inv = C.adjugate()/C_det
+    C_inv = sp.simplify(C.inv())
+
+    m, n = Zi.shape
+    Zi_left_pinv = sp.Matrix([])
+    for i in xrange(0,n):
+        Zi_left_pinv = st.concat_rows(Zi_left_pinv,C_inv.row(i))
+
+    o, p = Zi_left_pinv.shape
+    assert o==n and p==m, "There must have been a problem with the\
+                            computation of Zi_left_pinv"
+
+    assert is_unit_matrix(Zi_left_pinv*Zi), "Zi_left_pinv is wrong"
+    assert is_zero_matrix(Zi_left_pinv*P1i_tilde_right_ortho), "Zi_left_pinv is wrong"
+    assert is_zero_matrix(Zi_left_pinv*P1i_right_pseudo_inv), "Zi_left_pinv is wrong"
+
+    return Zi_left_pinv
+
 
 def is_symbolically_zero_matrix(matrix):
     matrix = sp.simplify(matrix)

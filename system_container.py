@@ -15,12 +15,19 @@ class SystemStack(object):
         no calculations here, just store and access of data
     """
     def __init__(self):
-        self.iteration_data = []
+        self.iteration_data = [] # contains a matrix container for every iteration step (=index
 
-        self._vec_x = None
+        self._vec_x = None # internal variable!
 
         self.vec_xdot = None
-        self.diffvec_x = None
+        self.diffvec_x = None # consists of vec_x and vec_xdot
+
+        # basis and basis 1-form
+        self.basis = None
+        self.basis_1form = None
+
+        # transformations
+        self.transformation = None
 
     @property
     def vec_x(self):
@@ -40,9 +47,6 @@ class SystemStack(object):
         assert isinstance(iter_stack, IterationStack)
         self.iteration_data.append(iter_stack)
 
-    def pop_iteration(self):
-        return self.iteration_data.pop()
-
     def get_iteration(self, i):
         assert type(i)==int, "Iteration step i must be of type integer!"
         return self.iteration_data[i]
@@ -55,7 +59,7 @@ class SystemStack(object):
 
     def get_outliers(self):
         counter = 0
-        outliers = [0]*self.iteration_steps() # list [0,0,0,...,1,..,0] (1=outlier)
+        outliers = [0]*self.iteration_steps() # list [0,0,0,...,1,..,0] (1:=outlier)
         for i in xrange(self.iteration_steps()):
             if self.iteration_data[i].is_outlier == True:
                 counter += 1
@@ -73,6 +77,7 @@ class SystemStack(object):
 
         Q_tilde_relevant_matrices = []
         number_of_outliers, outliers = self.get_outliers()
+
         if outliers.count(1) == 1:
             outlier_iteration = outliers.index(1)
             for i in xrange(self.iteration_steps()):
@@ -82,7 +87,7 @@ class SystemStack(object):
                 else:
                     P1i = self.iteration_data[i].P1
                     Q_tilde_relevant_matrices.append(P1i)
-        else:
+        elif outliers.count(1) > 1:
             # TODO: what if there is more than one outlier?
             #       there should be 2*(outliers.count(1)) row vectors
             #       in Q_tilde then
