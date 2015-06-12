@@ -56,7 +56,13 @@ def reduction(P1i, P0i):
     Ai = sp.simplify( (P0i - P1i_dot)*P1i_rpinv )
     Bi = sp.simplify( (P0i - P1i_dot)*P1i_roc )
 
-    return Ai, Bi, P1i_roc, P1i_rpinv, P1i_dot
+    # TODO: this is not very elegant!
+    try:
+        Bi_lpinv = left_pseudo_inverse(Bi)
+    except:
+        Bi_lpinv = None
+
+    return Ai, Bi, Bi_lpinv, P1i_roc, P1i_rpinv, P1i_dot
 
 def fourseven(Ai, Bi, P1i_roc, P1i_rpinv):
     if roc=="conv":
@@ -86,20 +92,25 @@ def fourseven(Ai, Bi, P1i_roc, P1i_rpinv):
 
 def elimination(Ai, Bi):
     Bi_loc = left_ortho_complement(Bi)
-    Bi_lpinv = left_pseudo_inverse(Bi)
+    try:
+        Bi_lpinv = left_pseudo_inverse(Bi)
+    except:
+        Bi_lpinv = None
+        
 
     P1i_new = Bi_loc
     P0i_new = Bi_loc*Ai
 
-    return P1i_new, P0i_new, Bi_loc, Bi_lpinv
+    return P1i_new, P0i_new, Bi_loc#, Bi_lpinv
 
 def store_P_matrices(cls, P1i, P0i):
     cls.P1 = P1i
     cls.P0 = P0i
 
-def store_reduction_matrices(cls, Ai, Bi, P1i_roc, P1i_rpinv, P1i_dot):
+def store_reduction_matrices(cls, Ai, Bi, Bi_lpinv, P1i_roc, P1i_rpinv, P1i_dot):
     cls.A = Ai
     cls.B = Bi
+    cls.B_lpinv = Bi_lpinv
     cls.P1_roc = P1i_roc
     cls.P1_rpinv = P1i_rpinv
     cls.P1_dot = P1i_dot
@@ -152,7 +163,7 @@ def main():
         # 1. reduktionsschritt
         reduction_matrices = reduction(P1i, P0i)
         store_reduction_matrices( myIteration, *reduction_matrices )
-        Ai, Bi, P1i_roc, P1i_rpinv, P1i_dot = reduction_matrices
+        Ai, Bi, Bi_lpinv, P1i_roc, P1i_rpinv, P1i_dot = reduction_matrices
 
         assert not is_zero_matrix(Bi), "System ist not flat!"
 
@@ -162,10 +173,9 @@ def main():
             outlier_matrices = fourseven(Ai, Bi, P1i_roc, P1i_rpinv)
             store_outlier_matrices( myIteration, *outlier_matrices )
             Zi, Zi_lpinv, Bi_tilde, Pi_tilde_roc = outlier_matrices
-            Bi = Bi_tilde
 
+            Bi = Bi_tilde
             myIteration.B_tilde_lpinv = left_pseudo_inverse(Bi)
-            
 
         if end_condition(Bi):
             myIteration.last_iter_step = True
@@ -178,11 +188,12 @@ def main():
             break
 
         # 2. eliminationsschritt
-        P1i, P0i, Bi_loc, Bi_lpinv = elimination(Ai, Bi)
+        #P1i, P0i, Bi_loc, Bi_lpinv = elimination(Ai, Bi)
+        P1i, P0i, Bi_loc = elimination(Ai, Bi)
 
         # store
         myIteration.B_loc = Bi_loc
-        myIteration.B_lpinv = Bi_lpinv
+        #myIteration.B_lpinv = Bi_lpinv
 
         # print results from this iteration
         myIteration.print_stack()
@@ -192,14 +203,19 @@ def main():
 
         i += 1
 
-    # create transformation and calculate Q
-    # TODO: berechne G(d/dt)
+    # create transformation and calculate Q and G(d/dt)
     myStack.transformation = Transformation(myStack)
     # check for integrability
     myIntegrabilityCheck = IntegrabilityCheck(myStack)
 
     #try_integrability_conditions(w)
     myIntegrabilityCheck.integrability_conditions()
+
+    # for testing
+    global P, Q, G
+    P = myStack.transformation.P
+    Q = myStack.transformation.Q
+    G = myStack.transformation.G
 
 
     print_line()

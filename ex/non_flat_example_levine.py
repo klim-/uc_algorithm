@@ -4,7 +4,7 @@ from __future__ import division
 import sympy as sp
 import symb_tools as st
 
-x1, x2 = st.symbols("x1, x2")
+x1, x2 = sp.symbols("x1, x2")
 vec_x = sp.Matrix([x1, x2])
 
 vec_xdot = st.perform_time_derivative(vec_x, vec_x)

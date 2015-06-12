@@ -66,7 +66,7 @@ class IntegrabilityCheck(object):
             if (w[i].d^w[j]).is_zero():
                 print "w[" + str(i) + "].d^w[" + str(j) + "]=0"
                 if i==j:
-                    find_pde_w_wedge_wd(w[i])
+                    self.find_pde_w_wedge_wd(w[i])
                 return True
             elif (w[i].d^w[j].d).is_zero() and j!=i:
                 print "w[" + str(i) + "].d^w[" + str(j) + "].d=0"
@@ -121,12 +121,12 @@ class IntegrabilityCheck(object):
         a = w.coeff
         n = len(a) + 1
         pde_list = []
-        mu = sp.Function('mu')(*myStack.vec_x)
+        mu = sp.Function('mu')(*self._myStack.vec_x)
         print "PDGLs wurden berechnet:"
         for i in xrange(1,n-1):
             for j in xrange(i+1,n):
                 #print "i=" + str(i) + ", j=" + str(j)
-                pde = a[j-1]*mu.diff(vec_x[i-1]) - a[i-1]*mu.diff(vec_x[j-1]) + mu*a[j-1].diff(vec_x[i-1]) - mu*a[i-1].diff(vec_x[j-1])
+                pde = a[j-1]*mu.diff(self._myStack.vec_x[i-1]) - a[i-1]*mu.diff(self._myStack.vec_x[j-1]) + mu*a[j-1].diff(self._myStack.vec_x[i-1]) - mu*a[i-1].diff(self._myStack.vec_x[j-1])
                 #IPS
                 print "0 ="
                 print_nicely(pde)

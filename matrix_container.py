@@ -53,5 +53,7 @@ class IterationStack(object):
             print_outlier_line()
 
             print_matrix("B", self.i, "_tilde", self.B_tilde)
+            print_matrix("B", self.i, "_tilde_lpinv", self.B_tilde_lpinv)
+            print_matrix("P1", self.i, "_tilde_roc", self.P1_tilde_roc)
             print_matrix("Z", self.i, "", self.Z)
             print_matrix("Z", self.i, "_lpinv", self.Z_lpinv)

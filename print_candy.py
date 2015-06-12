@@ -9,8 +9,8 @@ if qt:
     from IPython.display import display
     init_printing()
 
-string_line = "#"*100 + "\n\n"
-string_line2 = "-"*100 + "\n\n"
+string_line = "#"*85 + "\n\n"
+string_line2 = "-"*85 + "\n\n"
 
 def print_matrix(name, i, supplement, matrix):
     if not matrix==None:
