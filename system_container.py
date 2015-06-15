@@ -29,6 +29,9 @@ class SystemStack(object):
         # transformations
         self.transformation = None
 
+        # quick hack (should probably not live here)
+        subs_back_to_c = []
+
     @property
     def vec_x(self):
         return self._vec_x

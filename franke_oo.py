@@ -212,10 +212,11 @@ def main():
     myIntegrabilityCheck.integrability_conditions()
 
     # for testing
-    global P, Q, G
+    global P, Q, G, PG_shifted
     P = myStack.transformation.P
     Q = myStack.transformation.Q
     G = myStack.transformation.G
+    PG_shifted = myStack.transformation.PG_nc_shifted
 
 
     print_line()
