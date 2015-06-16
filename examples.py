@@ -20,3 +20,6 @@ from ex.franke_511 import * # (4.7) akad. bsp. 1
 #from ex.martin_gegenbeispiel import *
 
 #from ex.dreiecks_system import *
+
+
+#from ex.test import *

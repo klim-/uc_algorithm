@@ -42,12 +42,14 @@ def outlier(Bi):
     n, p = Bi.shape
     return True if (srank(Bi) < p) else False
 
-def reduction(P1i, P0i):
+def reduction(cls, P1i, P0i):
 
     if roc=="conv":
         P1i_roc = right_ortho_complement(P1i)
     elif roc=="alt":
         P1i_roc = alternative_right_ortho_complement(P1i)
+    else:
+        print "Please specify roc-parameter!"
 
     P1i_rpinv = right_pseudo_inverse(P1i)
 
@@ -62,9 +64,16 @@ def reduction(P1i, P0i):
     except:
         Bi_lpinv = None
 
+    cls.A = Ai
+    cls.B = Bi
+    cls.B_lpinv = Bi_lpinv
+    cls.P1_roc = P1i_roc
+    cls.P1_rpinv = P1i_rpinv
+    cls.P1_dot = P1i_dot
+
     return Ai, Bi, Bi_lpinv, P1i_roc, P1i_rpinv, P1i_dot
 
-def fourseven(Ai, Bi, P1i_roc, P1i_rpinv):
+def fourseven(cls, Ai, Bi, P1i_roc, P1i_rpinv):
     if roc=="conv":
         K2 = right_ortho_complement(Bi)
     elif roc=="alt":
@@ -88,9 +97,15 @@ def fourseven(Ai, Bi, P1i_roc, P1i_rpinv):
 
     assert is_unit_matrix( Zi_lpinv*Zi ), "Zi_lpinv seems to be wrong."
 
+    # store
+    cls.Z = Zi
+    cls.Z_lpinv = Zi_lpinv
+    cls.B_tilde = Bi_tilde
+    cls.P1_tilde_roc = P1i_tilde_roc
+
     return Zi, Zi_lpinv, Bi_tilde, P1i_tilde_roc
 
-def elimination(Ai, Bi):
+def elimination(cls, Ai, Bi):
     Bi_loc = left_ortho_complement(Bi)
     try:
         Bi_lpinv = left_pseudo_inverse(Bi)
@@ -101,25 +116,15 @@ def elimination(Ai, Bi):
     P1i_new = Bi_loc
     P0i_new = Bi_loc*Ai
 
+    # store
+    #cls.P1 = P1i_new
+    #cls.P0 = P0i_new
+
     return P1i_new, P0i_new, Bi_loc#, Bi_lpinv
 
 def store_P_matrices(cls, P1i, P0i):
     cls.P1 = P1i
     cls.P0 = P0i
-
-def store_reduction_matrices(cls, Ai, Bi, Bi_lpinv, P1i_roc, P1i_rpinv, P1i_dot):
-    cls.A = Ai
-    cls.B = Bi
-    cls.B_lpinv = Bi_lpinv
-    cls.P1_roc = P1i_roc
-    cls.P1_rpinv = P1i_rpinv
-    cls.P1_dot = P1i_dot
-
-def store_outlier_matrices(cls, Zi, Zi_lpinv, Bi_tilde, Pi_tilde_roc):
-    cls.Z = Zi
-    cls.Z_lpinv = Zi_lpinv
-    cls.B_tilde = Bi_tilde
-    cls.P1_tilde_roc = Pi_tilde_roc
 
 
 ########################################################################
@@ -129,7 +134,6 @@ def main():
 
     print "x ="; print_nicely(myStack.vec_x)
     print "\n\n xdot ="; print_nicely(myStack.vec_xdot)
-
 
     # exterior derivative of F_eq:
     try:
@@ -147,7 +151,7 @@ def main():
             P0i = st.concat_cols(P0i, vector0)
     print "\n"*3
 
-    ####################################################################
+    #####################################################################
 
     i = 0
 
@@ -161,18 +165,15 @@ def main():
                                         must be algebraic equations."
 
         # 1. reduktionsschritt
-        reduction_matrices = reduction(P1i, P0i)
-        store_reduction_matrices( myIteration, *reduction_matrices )
-        Ai, Bi, Bi_lpinv, P1i_roc, P1i_rpinv, P1i_dot = reduction_matrices
+        Ai, Bi, Bi_lpinv, P1i_roc, P1i_rpinv, P1i_dot = reduction(myIteration, P1i, P0i)
 
         assert not is_zero_matrix(Bi), "System ist not flat!"
 
         if outlier(Bi):
+            # sonderfall 4.7
             myIteration.is_outlier = True
 
-            outlier_matrices = fourseven(Ai, Bi, P1i_roc, P1i_rpinv)
-            store_outlier_matrices( myIteration, *outlier_matrices )
-            Zi, Zi_lpinv, Bi_tilde, Pi_tilde_roc = outlier_matrices
+            Zi, Zi_lpinv, Bi_tilde, Pi_tilde_roc = fourseven(myIteration, Ai, Bi, P1i_roc, P1i_rpinv)
 
             Bi = Bi_tilde
             myIteration.B_tilde_lpinv = left_pseudo_inverse(Bi)
@@ -189,7 +190,7 @@ def main():
 
         # 2. eliminationsschritt
         #P1i, P0i, Bi_loc, Bi_lpinv = elimination(Ai, Bi)
-        P1i, P0i, Bi_loc = elimination(Ai, Bi)
+        P1i, P0i, Bi_loc = elimination(myIteration, Ai, Bi)
 
         # store
         myIteration.B_loc = Bi_loc
@@ -212,11 +213,14 @@ def main():
     myIntegrabilityCheck.integrability_conditions()
 
     # for testing
-    global P, Q, G, PG_shifted
+    global P, Q, Q_, G, T
+    T=myStack.transformation
     P = myStack.transformation.P
     Q = myStack.transformation.Q
+    # non commutative version:
+    Q_ = list( T.make_symbols_non_commutative(Q) )[0]
     G = myStack.transformation.G
-    PG_shifted = myStack.transformation.PG_nc_shifted
+
 
 
     print_line()

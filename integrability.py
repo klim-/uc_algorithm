@@ -9,7 +9,7 @@ from print_candy import *
 from IPython import embed as IPS
 
 class IntegrabilityCheck(object):
-    """ the system is flat iff a dual basis w exists such that dw=0.
+    """ the system is flat iff a one form w exists such that dw=0.
     """
     def __init__(self, myStack):
         self._myStack = myStack

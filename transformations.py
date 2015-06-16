@@ -10,6 +10,8 @@ from algebra import *
 
 from IPython import embed as IPS
 
+show_Gi_matrices = False
+
 # needed noncommutative for G matrix calculation
 t = nct.t
 #s_ = nct.s
@@ -21,22 +23,13 @@ class Transformation(object):
         self._myStack = myStack
 
         self.P = None # P[d/dt]=P0 + P1*(d/dt)
-
         self.Q = None # unimodular completion of P[d/dt]
         self._w = None # internal variable of corresponding 1form
-
         self.G = None # G[d/dt]
-
 
         self.calculate_P_Matrix()
         self.calculate_Q_matrix()
         self.calculate_G_matrix()
-
-        # test:
-        self.PG_nc_shifted = self.mul_and_rs(self.P, self.G)
-
-        # substitute back
-        #self.PG = nct.make_all_symbols_commutative(self.PG_nc_shifted)[0]
 
     @property
     def w(self):
@@ -50,27 +43,84 @@ class Transformation(object):
         print_equation_from_list(self.w, "w", sympy=False)
         print_line()
 
-    def mul_and_rs(self, A, B):
-        # just for quicker testing
-        AB = nct.nc_mul( A, B )
-        return self.right_shift_all_in_matrix(AB)
+    def mul_rs_and_simplify_nc(self, A, B):
+        """ multiplies nc matrices A and B, right shifts s, converts
+            the result to commutative and simplifies it
+        """
+        AB_nc = A*B
+        AB_nc_shifted = self.right_shift_all_in_matrix(AB_nc)
+        AB_shifted_c = self.make_symbols_commutative(AB_nc_shifted)
+        extr_result = list(AB_shifted_c)[0]
+        result = sp.simplify(extr_result)
+
+        return result
+
+    def make_symbols_non_commutative(self, expr):
+        """ replaces commutative symbols x with non commutative symbols z
+        """
+        symbs = st.atoms(expr, sp.Symbol)
+        nc_symbols = [s for s in symbs if s.is_commutative]
+
+        #IPS()
+        new_symbols = [sp.Symbol(s.name.replace("x","z"), commutative=False)
+                       for s in nc_symbols]
+
+        tup_list = zip(nc_symbols, new_symbols)
+        return expr.subs(zip(nc_symbols, new_symbols)), tup_list
+
+    def make_symbols_commutative(self, expr):
+        """
+        :param expr:
+        :return: expr (with all symbols commutative) and
+                  a subs_tuple_list [(s1_c, s1_nc), ... ]
+        """
+
+        symbs = st.atoms(expr, sp.Symbol)
+        nc_symbols = [s for s in symbs if not s.is_commutative]
+
+        new_symbols = [sp.Symbol(s.name.replace("z","x"), commutative=True)
+                       for s in nc_symbols]
+
+        tup_list = zip(new_symbols, nc_symbols)
+        return expr.subs(zip(nc_symbols, new_symbols)), tup_list
+
+    def all_nc(self, matrix):
+        """ checks if matrix is fully non commutative
+        """
+        for i in list(matrix.atoms(sp.Symbol)):
+            if i.is_commutative:
+                return False
+        # wenn es eine reine Zahlenmatrix ist kommt ebenfalls True raus
+        # ist das gut?
+        return True
+
+    def right_shift_all_in_matrix(self, matrix):
+        # @carsten: ist diese funktion wirklich notwendig?
+        m,n = matrix.shape
+        matrix_shifted = sp.Matrix([])
+        for i in xrange(n):
+            col = matrix.col(i)
+            col_shifted = sp.Matrix([nct.right_shift_all(expr,s,t,expr.atoms(sp.Symbol)) for expr in col])
+            matrix_shifted = st.concat_cols(matrix_shifted, col_shifted)
+
+        return matrix_shifted
+
+########################################################################
 
     def calculate_P_Matrix(self):
+        """ specifies system with P(d/dt) = P00 + P10*s
+        """
         P10 = self._myStack.get_iteration(0).P1
         P00 = self._myStack.get_iteration(0).P0
-        
-        new_vector = self.get_nc_subs_vector([P10, P00])
-        new_vector_nc, subs_tuples = self.make_symbols_non_comutative(new_vector)
 
-        P10_nc = st.symbs_to_func( P10.subs(subs_tuples), new_vector_nc, t )
-        P00_nc = st.symbs_to_func( P00.subs(subs_tuples), new_vector_nc, t )
+        P10_nc = list( self.make_symbols_non_commutative(P10) )[0]
+        P00_nc = list( self.make_symbols_non_commutative(P00) )[0]
 
-        #P10_nc = self._myStack.get_iteration(0).P1.subs(self._myStack.diffvec_x, new_vector_nc)
-        #P00_nc = self._myStack.get_iteration(0).P0.subs(self._myStack.diffvec_x, new_vector_nc)
-
-        self.P = P00_nc + nct.nc_mul(P10_nc, s_)
+        self.P = P00_nc + nct.nc_mul(P10_nc, s)
 
     def calculate_Q_matrix(self):
+        """ unimodular completion of P(d/dt) with Q = P1i * ... * P11 * P10
+        """
         print_line()
         print("Algorithmus am Ende\n")
 
@@ -109,78 +159,13 @@ class Transformation(object):
             G = G*Gi_list[i]
             #G = nct.nc_mul(G, Gi_list[i])
 
-        #G = sp.simplify(G)
-
         # right shift
         G_shifted = self.right_shift_all_in_matrix(G)
-        
 
         print "G-matrix = "
         print_nicely(G_shifted)
 
         self.G = G_shifted
-
-    def make_symbols_non_comutative(self, expr, appendix='_nc'):
-        symbs = st.atoms(expr, sp.Symbol)
-        nc_symbols = [s for s in symbs if s.is_commutative]
-
-        new_symbols = [sp.Symbol(s.name+appendix, commutative=False)
-                       for s in nc_symbols]
-
-        tup_list = zip(nc_symbols, new_symbols)
-        return expr.subs(zip(nc_symbols, new_symbols)), tup_list
-
-    def all_nc(self, matrix):
-        for i in list(matrix.atoms(sp.Symbol)):
-            if i.is_commutative:
-                return False
-        # wenn es eine reine Zahlenmatrix ist kommt ebenfalls True raus
-        # ist das gut?
-        return True
-
-    def get_nc_subs_vector(self, matrix_list):
-        # get symbols:
-        # duplicate from integrability.py (def generate_basis(self))
-        # check highest order of derivatives in matrix_list
-        highest_order = 0
-        for i in xrange(len(matrix_list)):
-            for n in matrix_list[i].atoms():
-                if hasattr(n, "difforder"):
-                    if n.difforder>highest_order:
-                        highest_order = n.difforder
-
-        # hack:
-        highest_order = 5
-
-        # generate vector with vec_x and its derivatives up to highest_order
-        new_vector = self._myStack.vec_x
-        for index in xrange(1, highest_order+1):
-            vec_x_ndot = st.perform_time_derivative(self._myStack.vec_x, self._myStack.vec_x, order=index)
-            new_vector = st.concat_rows( new_vector, vec_x_ndot )
-
-        return new_vector
-
-    def right_shift_all_in_matrix(self, matrix):
-        # @carsten: ist diese funktion wirklich notwendig?
-        m,n = matrix.shape
-        # TODO: im moment nur spaltenmatrix
-        matrix_shifted = sp.Matrix([])
-        for i in xrange(m):
-            row = matrix.row(i)
-            row_shifted = sp.Matrix([])
-            for j in xrange(n):
-                #IPS()
-                #sp.pprint(row[j])
-                new_row = nct.right_shift_all(row[j], s_, t)
-                row_shifted = st.concat_cols(row_shifted, new_row)
-            matrix_shifted = st.concat_rows(matrix_shifted, row_shifted)
-
-
-        #for i in xrange(len(matrix)):
-            #new_row = nct.right_shift_all( matrix[i], s_, t )
-            #matrix_shifted = st.concat_rows( matrix_shifted, new_row )
-        #IPS()
-        return matrix_shifted
 
     def calculate_Gi_matrix(self, i):
         # 1) richtige matrizen für Gi[d/dt] raussuchen
@@ -190,117 +175,45 @@ class Transformation(object):
         iteration = self._myStack.get_iteration(i)
 
         if not iteration.is_outlier:
+            # get matrices
             P1_rpinv = iteration.P1_rpinv
             P1_roc = iteration.P1_roc
             B_lpinv = iteration.B_lpinv
             A = iteration.A
 
-            new_vector = self.get_nc_subs_vector([P1_rpinv, P1_roc, B_lpinv, A])
-            new_vector_nc, subs_tuples = self.make_symbols_non_comutative(new_vector)
-           
-            P1_rpinv_nc = st.symbs_to_func( P1_rpinv.subs(subs_tuples), new_vector_nc, t )
-            P1_roc_nc = st.symbs_to_func( P1_roc.subs(subs_tuples), new_vector_nc, t )
-            B_lpinv_nc = st.symbs_to_func( B_lpinv.subs(subs_tuples), new_vector_nc, t )
-            A_nc = st.symbs_to_func( A.subs(subs_tuples), new_vector_nc, t )
-
-            #IPS()
+            # convert commutative symbols to non commutative
+            P1_rpinv_nc = list( self.make_symbols_non_commutative(P1_rpinv) )[0]
+            P1_roc_nc = list( self.make_symbols_non_commutative(P1_roc) )[0]
+            B_lpinv_nc = list( self.make_symbols_non_commutative(B_lpinv) )[0]
+            A_nc = list( self.make_symbols_non_commutative(A) )[0]
 
             Gi = P1_rpinv_nc - P1_roc_nc*( B_lpinv_nc*s_ + B_lpinv_nc*A_nc )
             #Gi = P1_rpinv_nc - nct.nc_mul(P1_roc_nc, nct.nc_mul(B_lpinv_nc,s) + nct.nc_mul(B_lpinv_nc, A_nc))
 
         else:
+            # get matrices
             P1_rpinv = iteration.P1_rpinv
             P1_tilde_roc = iteration.P1_tilde_roc
             B_tilde_lpinv = iteration.B_tilde_lpinv
             A = iteration.A
-
             Z = iteration.Z
 
-            new_vector = self.get_nc_subs_vector([P1_rpinv, P1_tilde_roc, B_tilde_lpinv, A, Z])
-            new_vector_nc, subs_tuples = self.make_symbols_non_comutative(new_vector)
-            
-            P1_rpinv_nc = st.symbs_to_func( P1_rpinv.subs(subs_tuples), new_vector_nc, t )
-            P1_tilde_roc_nc = st.symbs_to_func( P1_tilde_roc.subs(subs_tuples), new_vector_nc, t )
-            B_tilde_lpinv_nc = st.symbs_to_func( B_tilde_lpinv.subs(subs_tuples), new_vector_nc, t )
-            A_nc = st.symbs_to_func( A.subs(subs_tuples), new_vector_nc, t )
-            
-            Z_nc = st.symbs_to_func( Z.subs(subs_tuples), new_vector_nc, t )
-
-            #IPS()
-
+            # convert commutative symbols to non commutative
+            P1_rpinv_nc = list( self.make_symbols_non_commutative(P1_rpinv) )[0]
+            P1_tilde_roc_nc = list( self.make_symbols_non_commutative(P1_tilde_roc) )[0]
+            B_tilde_lpinv_nc = list( self.make_symbols_non_commutative(B_tilde_lpinv) )[0]
+            A_nc = list( self.make_symbols_non_commutative(A) )[0]
+            Z_nc = list( self.make_symbols_non_commutative(Z) )[0]
 
             Gi = P1_rpinv_nc - P1_tilde_roc_nc*( B_tilde_lpinv_nc*s_ + B_tilde_lpinv_nc*A_nc )
             #Gi = P1_rpinv_nc - nct.nc_mul(P1_tilde_roc_nc, nct.nc_mul(B_tilde_lpinv_nc,s) + nct.nc_mul(B_tilde_lpinv_nc, A_nc))
 
             Gi = st.concat_cols(Gi, Z_nc)
 
-        print_matrix("G", i, "", Gi)
+        if show_Gi_matrices:
+            print_matrix("G", i, "", Gi)
 
         # store
         iteration.Gi = Gi
 
         return Gi
-
-################
-        
-        #P1_rpinv = iteration.P1_rpinv
-        #P1_roc = iteration.P1_roc
-        #B_lpinv = iteration.B_lpinv
-        #A = iteration.A
-
-        #if iteration.is_outlier:
-            #B_lpinv = iteration.B_tilde_lpinv
-
-        #new_vector = self.get_nc_subs_vector([P1_rpinv, P1_roc, B_lpinv, A])
-        #new_vector_nc, subs_tuples = self.make_symbols_non_comutative(new_vector)
-
-        ##IPS()
-
-        ## substitute symbols
-        #P1_rpinv_nc = P1_rpinv.subs(subs_tuples)
-        #A_nc = A.subs(subs_tuples)
-
-        #IPS()
-
-        #if not iteration.is_outlier:
-            #P1_roc_nc = iteration.P1_roc.subs(subs_tuples)
-            #B_lpinv_nc = iteration.B_lpinv.subs(subs_tuples)
-
-            #Gi = P1_rpinv_nc - P1_roc_nc*( B_lpinv_nc*s + B_lpinv_nc*A_nc )
-            ##Gi = P1_rpinv_nc - nct.nc_mul(P1_roc_nc, nct.nc_mul(B_lpinv_nc,s) + nct.nc_mul(B_lpinv_nc, A_nc))
-        #else:
-            #Zi = iteration.Z.subs(subs_tuples)
-
-            #P1_roc_nc = iteration.P1_tilde_roc.subs(subs_tuples)
-            #B_tilde_lpinv_nc = iteration.B_tilde_lpinv.subs(subs_tuples)
-            #B_lpinv_nc = B_tilde_lpinv_nc
-
-            #Gi = P1_rpinv_nc - P1_roc_nc*( B_lpinv_nc*s + B_lpinv_nc*A_nc )
-            ##Gi = P1_rpinv_nc - nct.nc_mul(P1_roc_nc, nct.nc_mul(B_lpinv_nc,s) + nct.nc_mul(B_lpinv_nc, A_nc))
-            #Gi = st.concat_cols(Gi, Zi)
-
-        ## right shift
-
-        #print_matrix("G", i, "", Gi)
-
-        ## store
-        #iteration.Gi = Gi
-
-        #return Gi
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
