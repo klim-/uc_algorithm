@@ -42,7 +42,7 @@ def outlier(Bi):
     n, p = Bi.shape
     return True if (srank(Bi) < p) else False
 
-def reduction(cls, P1i, P0i):
+def reduction(iter_stack, P1i, P0i):
 
     if roc=="conv":
         P1i_roc = right_ortho_complement(P1i)
@@ -64,16 +64,12 @@ def reduction(cls, P1i, P0i):
     except:
         Bi_lpinv = None
 
-    cls.A = Ai
-    cls.B = Bi
-    cls.B_lpinv = Bi_lpinv
-    cls.P1_roc = P1i_roc
-    cls.P1_rpinv = P1i_rpinv
-    cls.P1_dot = P1i_dot
+    # store
+    iter_stack.store_reduction_matrices( Ai, Bi, Bi_lpinv, P1i_roc, P1i_rpinv, P1i_dot )
 
     return Ai, Bi, Bi_lpinv, P1i_roc, P1i_rpinv, P1i_dot
 
-def fourseven(cls, Ai, Bi, P1i_roc, P1i_rpinv):
+def fourseven(iter_stack, Ai, Bi, P1i_roc, P1i_rpinv):
     if roc=="conv":
         K2 = right_ortho_complement(Bi)
     elif roc=="alt":
@@ -98,29 +94,24 @@ def fourseven(cls, Ai, Bi, P1i_roc, P1i_rpinv):
     assert is_unit_matrix( Zi_lpinv*Zi ), "Zi_lpinv seems to be wrong."
 
     # store
-    cls.Z = Zi
-    cls.Z_lpinv = Zi_lpinv
-    cls.B_tilde = Bi_tilde
-    cls.P1_tilde_roc = P1i_tilde_roc
+    iter_stack.store_outlier_matrices( Zi, Zi_lpinv, Bi_tilde, P1i_tilde_roc )
 
     return Zi, Zi_lpinv, Bi_tilde, P1i_tilde_roc
 
-def elimination(cls, Ai, Bi):
+def elimination(iter_stack, Ai, Bi):
     Bi_loc = left_ortho_complement(Bi)
-    try:
-        Bi_lpinv = left_pseudo_inverse(Bi)
-    except:
-        Bi_lpinv = None
+    #try:
+    #    Bi_lpinv = left_pseudo_inverse(Bi)
+    #except:
+    #    Bi_lpinv = None
         
+    # store
+    iter_stack.store_elimination_matrices(Bi_loc)
 
     P1i_new = Bi_loc
     P0i_new = Bi_loc*Ai
 
-    # store
-    #cls.P1 = P1i_new
-    #cls.P0 = P0i_new
-
-    return P1i_new, P0i_new, Bi_loc#, Bi_lpinv
+    return P1i_new, P0i_new
 
 def store_P_matrices(cls, P1i, P0i):
     cls.P1 = P1i
@@ -190,11 +181,10 @@ def main():
 
         # 2. eliminationsschritt
         #P1i, P0i, Bi_loc, Bi_lpinv = elimination(Ai, Bi)
-        P1i, P0i, Bi_loc = elimination(myIteration, Ai, Bi)
+        P1i, P0i = elimination(myIteration, Ai, Bi)
 
         # store
-        myIteration.B_loc = Bi_loc
-        #myIteration.B_lpinv = Bi_lpinv
+        #myIteration.B_loc = Bi_loc
 
         # print results from this iteration
         myIteration.print_stack()
@@ -209,16 +199,13 @@ def main():
     # check for integrability
     myIntegrabilityCheck = IntegrabilityCheck(myStack)
 
-    #try_integrability_conditions(w)
-    myIntegrabilityCheck.integrability_conditions()
-
     # for testing
     global P, Q, Q_, G, T
     T=myStack.transformation
     P = myStack.transformation.P
     Q = myStack.transformation.Q
     # non commutative version:
-    Q_ = list( T.make_symbols_non_commutative(Q) )[0]
+    Q_ = T.make_symbols_non_commutative(Q)
     G = myStack.transformation.G
 
 

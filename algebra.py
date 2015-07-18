@@ -4,6 +4,8 @@ import sympy as sp
 import numpy as np
 import symb_tools as st
 
+from IPython import embed as IPS
+
 # specify how to optimize calculation of pseudo inverse / ortho complement
 pinv_optimization = "free_symbols" # options: "free_symbols", "count_ops", "none"
 
@@ -57,7 +59,8 @@ def has_right_ortho_complement(matrix):
 def left_pseudo_inverse(matrix):
     m, n = matrix.shape
     r = srank(matrix)
-    assert r==n, "Matrix does not have full column rank!"
+    #assert r==n, "Matrix does not have full column rank!"
+    assert not is_zero_matrix(matrix), "Matrix is zero matrix!"
 
     transposed_rpinv = right_pseudo_inverse(matrix.T)
     matrix_lpinv = transposed_rpinv.T
@@ -120,9 +123,8 @@ def nr_of_ops(vector):
 def reshape_matrix_columns(P):
     m0, n0 = P.shape
 
-    # pick m0 of the simplest (=>(m0-1) or less entries are zero) lin.
-    # independent columns of P:
-    P_new = remove_zero_columns(P) # normally, this step should not be necessary
+    # pick m0 of the simplest lin. independent columns of P:
+    P_new = remove_zero_columns(P)
     m1, n1 = P_new.shape
 
     list_of_cols = matrix_to_vectorlist(P_new)
@@ -149,7 +151,7 @@ def reshape_matrix_columns(P):
             break
 
     # calculate transformation matrix R: -------------------------------
-    R_tilde = sp.Matrix([])
+    #R_tilde = sp.Matrix([])
     used_cols = []
     R = sp.Matrix([])
     for k in xrange(m1):
@@ -159,21 +161,22 @@ def reshape_matrix_columns(P):
         tmp = sp.zeros(n0,1)
         tmp[old_column_index] = 1
 
-        R_tilde = st.concat_cols(R_tilde,tmp)
-    R=R_tilde
+        #R_tilde = st.concat_cols(R_tilde,tmp)
+        R = st.concat_cols(R,tmp)
+    #R=R_tilde
 
     # remainder columns of R matrix
-    m2,n2 = R_tilde.shape
+    #m2,n2 = R_tilde.shape
+    m2,n2 = R.shape
     for l in xrange(n0):
         if l not in used_cols:
             R_col = sp.zeros(n0,1)
             R_col[l] = 1
             R = st.concat_cols(R,R_col)
 
-    m2, n2 = A.shape
-    #r2 = A.rank()
+    m3, n3 = A.shape
     r2 = srank(A)
-    assert m2==r2, "A problem occured in reshaping the matrix."
+    assert m3==r2, "A problem occured in reshaping the matrix."
 
     # calculate B matrix: ----------------------------------------------
     B = sp.Matrix([])
@@ -271,21 +274,22 @@ def alternative_right_ortho_complement(P):
     
     #return transform_l, diag, transform_r
 
-def Zi_left_pinv_with_restrictions(Zi, P1i_tilde_right_ortho, P1i_right_pseudo_inv):
+def Zi_left_pinv_with_restrictions(Zi, P1i_tilde_roc, P1i_rpinv):
     """ Given a matrix Zi, this function calculates a matrix such that:
-            Zi_left_pinv * Zi                    = I
-            Zi_left_pinv * P1i_tilde_right_ortho = 0
-            Zi_left_pinv * P1i_right_pseudo_inv  = 0
+            Zi_left_pinv * Zi            = I
+            Zi_left_pinv * P1i_tilde_roc = 0
+            Zi_left_pinv * P1i_rpinv     = 0
     """
-    assert check_row_compatibility(Zi, P1i_tilde_right_ortho, P1i_right_pseudo_inv),\
+    assert check_row_compatibility(Zi, P1i_tilde_roc, P1i_rpinv),\
         "Matrices do not match in row dimension."
 
-    C = st.concat_cols(Zi, P1i_tilde_right_ortho, P1i_right_pseudo_inv)
+    C = st.concat_cols(Zi, P1i_tilde_roc, P1i_rpinv)
 
     assert is_regular_matrix(C), "C is not a regular matrix"
     C_det = C.berkowitz_det()
     C_inv = C.adjugate()/C_det
     C_inv = sp.simplify(C.inv())
+    #C_inv = C.inv()
 
     m, n = Zi.shape
     Zi_left_pinv = sp.Matrix([])
@@ -296,9 +300,10 @@ def Zi_left_pinv_with_restrictions(Zi, P1i_tilde_right_ortho, P1i_right_pseudo_i
     assert o==n and p==m, "There must have been a problem with the\
                             computation of Zi_left_pinv"
 
+    #IPS()
     assert is_unit_matrix(Zi_left_pinv*Zi), "Zi_left_pinv is wrong"
-    assert is_zero_matrix(Zi_left_pinv*P1i_tilde_right_ortho), "Zi_left_pinv is wrong"
-    assert is_zero_matrix(Zi_left_pinv*P1i_right_pseudo_inv), "Zi_left_pinv is wrong"
+    assert is_zero_matrix(Zi_left_pinv*P1i_tilde_roc), "Zi_left_pinv is wrong"
+    assert is_zero_matrix(Zi_left_pinv*P1i_rpinv), "Zi_left_pinv is wrong"
 
     return Zi_left_pinv
 

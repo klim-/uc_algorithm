@@ -17,6 +17,8 @@ class IntegrabilityCheck(object):
         self.generate_basis()
 
         self.assemble_dual_basis()
+        
+        self.integrability_conditions()
 
     def generate_basis(self):
         # TODO: not the most elegant way?

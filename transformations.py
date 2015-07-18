@@ -61,12 +61,25 @@ class Transformation(object):
         symbs = st.atoms(expr, sp.Symbol)
         nc_symbols = [s for s in symbs if s.is_commutative]
 
-        #IPS()
         new_symbols = [sp.Symbol(s.name.replace("x","z"), commutative=False)
                        for s in nc_symbols]
 
         tup_list = zip(nc_symbols, new_symbols)
-        return expr.subs(zip(nc_symbols, new_symbols)), tup_list
+        return expr.subs(zip(nc_symbols, new_symbols))#, tup_list
+
+    def convert_to_nc_matrices(self, *args):
+        """ Converts commutative symbols x with non commutative symbols z
+            in matrices.
+        """
+        # TODO: asserts!
+        
+        list_of_nc_matrices = []
+        
+        for a in args:
+            m = self.make_symbols_non_commutative(a)
+            list_of_nc_matrices.append(m)
+        
+        return tuple(list_of_nc_matrices)
 
     def make_symbols_commutative(self, expr):
         """
@@ -82,7 +95,7 @@ class Transformation(object):
                        for s in nc_symbols]
 
         tup_list = zip(new_symbols, nc_symbols)
-        return expr.subs(zip(nc_symbols, new_symbols)), tup_list
+        return expr.subs(zip(nc_symbols, new_symbols))#, tup_list
 
     def all_nc(self, matrix):
         """ checks if matrix is fully non commutative
@@ -113,10 +126,17 @@ class Transformation(object):
         P10 = self._myStack.get_iteration(0).P1
         P00 = self._myStack.get_iteration(0).P0
 
-        P10_nc = list( self.make_symbols_non_commutative(P10) )[0]
-        P00_nc = list( self.make_symbols_non_commutative(P00) )[0]
+        P10_nc = self.make_symbols_non_commutative(P10)
+        P00_nc = self.make_symbols_non_commutative(P00)
 
         self.P = P00_nc + nct.nc_mul(P10_nc, s)
+        return self.P
+
+    def multiply_matrices_in_list(self, matrix_list):
+        result = matrix_list[0]
+        for i in xrange(1, len(matrix_list)):
+            result = matrix_list[i]*result
+        return result
 
     def calculate_Q_matrix(self):
         """ unimodular completion of P(d/dt) with Q = P1i * ... * P11 * P10
@@ -126,26 +146,29 @@ class Transformation(object):
 
         Q_relevant_matrices, Q_tilde_relevant_matrices = self._myStack.get_Q_relevant_matrices()
 
-        def multiply_matrices_in_list(matrix_list):
-            result = matrix_list[0]
-            for i in xrange(1, len(matrix_list)):
-                result = matrix_list[i]*result
-            return result
 
-        Q_matrix = multiply_matrices_in_list( Q_relevant_matrices )
+        #Q_matrix = self.multiply_matrices_in_list( Q_relevant_matrices )
 
-        if not Q_tilde_relevant_matrices==[]:
-            Q_tilde = multiply_matrices_in_list( Q_tilde_relevant_matrices )
-            Q_matrix = st.concat_rows(Q_matrix, Q_tilde)
+        #if not len(Q_tilde_relevant_matrices)==0:
+            #Q_tilde = self.multiply_matrices_in_list( Q_tilde_relevant_matrices )
+            #Q_matrix = st.concat_rows(Q_matrix, Q_tilde)
+        Q1 = self.multiply_matrices_in_list( Q_relevant_matrices )
 
-        m, n = Q_matrix.shape
+        if not len(Q_tilde_relevant_matrices)==0:
+            Q2 = self.multiply_matrices_in_list( Q_tilde_relevant_matrices )
+        else:
+            Q2 = sp.Matrix([])
+
+        Q = st.concat_rows(Q1, Q2)
+
+        m, n = Q.shape
         assert n==len(self._myStack.vec_x), "Dimensions of Q-Matrix do not fit."
 
         print "Q-matrix = "
-        print_nicely(Q_matrix)
+        print_nicely(Q)
         print "\n"
 
-        self.Q = Q_matrix
+        self.Q = Q
 
     def calculate_G_matrix(self):
         Gi_list = []
@@ -182,10 +205,14 @@ class Transformation(object):
             A = iteration.A
 
             # convert commutative symbols to non commutative
-            P1_rpinv_nc = list( self.make_symbols_non_commutative(P1_rpinv) )[0]
-            P1_roc_nc = list( self.make_symbols_non_commutative(P1_roc) )[0]
-            B_lpinv_nc = list( self.make_symbols_non_commutative(B_lpinv) )[0]
-            A_nc = list( self.make_symbols_non_commutative(A) )[0]
+            #P1_rpinv_nc = list( self.make_symbols_non_commutative(P1_rpinv) )[0]
+            
+            P1_rpinv_nc, P1_roc_nc, B_lpinv_nc, A_nc = self.convert_to_nc_matrices(P1_rpinv, P1_roc, B_lpinv, A)
+            
+            #~ P1_rpinv_nc = self.make_symbols_non_commutative(P1_rpinv)
+            #~ P1_roc_nc = self.make_symbols_non_commutative(P1_roc)
+            #~ B_lpinv_nc = self.make_symbols_non_commutative(B_lpinv)
+            #~ A_nc = self.make_symbols_non_commutative(A)
 
             Gi = P1_rpinv_nc - P1_roc_nc*( B_lpinv_nc*s_ + B_lpinv_nc*A_nc )
             #Gi = P1_rpinv_nc - nct.nc_mul(P1_roc_nc, nct.nc_mul(B_lpinv_nc,s) + nct.nc_mul(B_lpinv_nc, A_nc))
@@ -199,11 +226,11 @@ class Transformation(object):
             Z = iteration.Z
 
             # convert commutative symbols to non commutative
-            P1_rpinv_nc = list( self.make_symbols_non_commutative(P1_rpinv) )[0]
-            P1_tilde_roc_nc = list( self.make_symbols_non_commutative(P1_tilde_roc) )[0]
-            B_tilde_lpinv_nc = list( self.make_symbols_non_commutative(B_tilde_lpinv) )[0]
-            A_nc = list( self.make_symbols_non_commutative(A) )[0]
-            Z_nc = list( self.make_symbols_non_commutative(Z) )[0]
+            P1_rpinv_nc = self.make_symbols_non_commutative(P1_rpinv)
+            P1_tilde_roc_nc = self.make_symbols_non_commutative(P1_tilde_roc)
+            B_tilde_lpinv_nc = self.make_symbols_non_commutative(B_tilde_lpinv)
+            A_nc = self.make_symbols_non_commutative(A)
+            Z_nc = self.make_symbols_non_commutative(Z)
 
             Gi = P1_rpinv_nc - P1_tilde_roc_nc*( B_tilde_lpinv_nc*s_ + B_tilde_lpinv_nc*A_nc )
             #Gi = P1_rpinv_nc - nct.nc_mul(P1_tilde_roc_nc, nct.nc_mul(B_tilde_lpinv_nc,s) + nct.nc_mul(B_tilde_lpinv_nc, A_nc))

@@ -34,6 +34,29 @@ class IterationStack(object):
 
         self.Gi = None
 
+    def store_reduction_matrices(self, A, B, B_lpinv, P1_roc, P1_rpinv, P1_dot):
+        self.A = A
+        self.B = B
+        self.B_lpinv = B_lpinv
+        self.P1_roc = P1_roc
+        self.P1_rpinv = P1_rpinv
+        self.P1_dot = P1_dot
+
+    def store_outlier_matrices(self, Z, Z_lpinv, B_tilde, P1_tilde_roc):
+        self.Z = Z
+        self.Z_lpinv = Z_lpinv
+        self.B_tilde = B_tilde
+        self.P1_tilde_roc = P1_tilde_roc
+
+    def store_elimination_matrices(self, B_loc):
+        self.B_loc = B_loc
+
+    def get_Gi_matrices(self):
+        if self.is_outlier:
+            return P1_rpinv, P1_tilde_roc, B_tilde_lpinv, A, Z
+        else:
+            return P1_rpinv, P1_roc, B_lpinv, A
+
     def print_stack(self):
         print_next_iteration(self.i)
 
