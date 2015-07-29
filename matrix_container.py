@@ -7,14 +7,14 @@ from IPython import embed as IPS
 class IterationStack(object):
     """ container that carries data for the ith iteration
     """
-    def __init__(self, iteration):
+    def __init__(self, iteration, P1, P0):
         self.i = iteration
 
         self.is_outlier = False
         self.last_iter_step = False # might not be necessary
 
-        self.P1 = None
-        self.P0 = None
+        self.P1 = P1
+        self.P0 = P0
 
         self.P1_roc = None
         self.P1_rpinv = None
@@ -42,10 +42,12 @@ class IterationStack(object):
         self.P1_rpinv = P1_rpinv
         self.P1_dot = P1_dot
 
-    def store_outlier_matrices(self, Z, Z_lpinv, B_tilde, P1_tilde_roc):
+    def store_outlier_matrices(self, Z, Z_lpinv, B_tilde, B_tilde_lpinv, P1_tilde_roc):
+        self.is_outlier = True
         self.Z = Z
         self.Z_lpinv = Z_lpinv
         self.B_tilde = B_tilde
+        self.B_tilde_lpinv = B_tilde_lpinv
         self.P1_tilde_roc = P1_tilde_roc
 
     def store_elimination_matrices(self, B_loc):
@@ -58,6 +60,8 @@ class IterationStack(object):
             return P1_rpinv, P1_roc, B_lpinv, A
 
     def print_stack(self):
+        """ prints all matrices for this iteration
+        """
         print_next_iteration(self.i)
 
         print_matrix("P1", self.i, "", self.P1)
@@ -65,6 +69,26 @@ class IterationStack(object):
         
         print_matrix("P1", self.i, "_roc", self.P1_roc)
         print_matrix("P1", self.i, "_rpinv", self.P1_rpinv)
+        print_matrix("P1", self.i, "_dot", self.P1_dot)
+
+        print_matrix("A", self.i, "", self.A)
+        print_matrix("B", self.i, "", self.B)
+        print_matrix("B", self.i, "_loc", self.B_loc)
+        print_matrix("B", self.i, "_lpinv", self.B_lpinv)
+        
+        if self.is_outlier:
+            print_outlier_line()
+
+            print_matrix("B", self.i, "_tilde", self.B_tilde)
+            print_matrix("B", self.i, "_tilde_lpinv", self.B_tilde_lpinv)
+            print_matrix("P1", self.i, "_tilde_roc", self.P1_tilde_roc)
+            print_matrix("Z", self.i, "", self.Z)
+            print_matrix("Z", self.i, "_lpinv", self.Z_lpinv)
+
+    def print_hint_stack(self):
+        """ prints remaining matrices in case of manual mode
+        """
+        print_next_iteration(self.i)
         print_matrix("P1", self.i, "_dot", self.P1_dot)
 
         print_matrix("A", self.i, "", self.A)

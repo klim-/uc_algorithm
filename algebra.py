@@ -45,9 +45,12 @@ def has_left_ortho_complement(matrix):
 def right_ortho_complement(matrix):
     assert has_right_ortho_complement(matrix), "There is no rightorthocomplement!"
 
-    v = sp.simplify( st.nullspaceMatrix(matrix) )
-    assert is_zero_matrix(matrix*v), "Leftorthocomplement is not correct."
-    return v
+    if roc=="conv":
+        v = sp.simplify( st.nullspaceMatrix(matrix) )
+        assert is_zero_matrix(matrix*v), "Leftorthocomplement is not correct."
+        return v
+    else:
+        return alternative_right_ortho_complement(matrix)
 
 def has_right_ortho_complement(matrix):
     r = srank(matrix)
@@ -70,12 +73,18 @@ def left_pseudo_inverse(matrix):
     return matrix_lpinv
 
 def get_column_index_of_matrix(matrix, column):
+    """ if V is a column vector of a matrix A, than this function returns
+        the column index.
+    """
     m1, n1 = matrix.shape
     for index in xrange(n1):
         if matrix.col(index)==column:
             return index
+    return None
 
 def remove_zero_columns(matrix):
+    """ this function removes zero columns of a matrix
+    """
     m, n = matrix.shape
     M = sp.Matrix([])
 
@@ -183,6 +192,9 @@ def reshape_matrix_columns(P):
     tmp = P*R
     for i in xrange(n0-m0):
         B = st.concat_cols(B,tmp.col(m0+i))
+
+    assert is_zero_matrix( (P*R) - st.concat_cols(A,B)), "A problem occured in reshaping the matrix."
+
     return A, B, R
 
 def right_pseudo_inverse(P):
@@ -234,45 +246,6 @@ def alternative_right_ortho_complement(P):
     assert is_zero_matrix(P*P_roc), "Right orthocomplement is not correct."
     return P_roc
 
-
-#def diagonalize(matrix):
-    #""" TODO: ARE THERE ANY CASES WHERE THIS DOES NOT WORK???
-
-        #If r = matrix.rank(), then matrix can be diagonalized to
-                        #(I_r 0)
-        #matrix_diag =   (0   0)
-    #"""
-    #m, n = matrix.shape
-    #r = matrix.rank()
-    #if (m>n) and (r!=n):
-        #raise NotImplementedError
-    #elif (n>m) and (r!=m):
-        #raise NotImplementedError
-    
-    
-    #if has_right_ortho_complement(matrix):
-        #roc = right_ortho_complement(matrix)
-        #rpinv = right_pseudo_inverse(matrix)
-        #transform_r = st.concat_cols(rpinv, roc)
-        #transform_l = sp.eye(matrix.shape[0])
-        #assert is_regular_matrix(transform_r), "Transformation matrix is not regular."
-        #diag = sp.simplify(matrix*transform_r)
-
-    #elif has_left_ortho_complement(matrix):
-        #loc = left_ortho_complement(matrix)
-        #lpinv = left_pseudo_inverse(matrix)
-        #transform_l = st.concat_rows(lpinv, loc)
-        #transform_r = sp.eye(matrix.shape[1])
-        #assert is_regular_matrix(transform_l), "Transformation matrix is not regular."
-        #diag = sp.simplify(transform_l*matrix)
-    
-    #else:
-        ## quadratisch, voller rang
-        #transform_r = matrix.inv()
-        #transform_l = sp.eye(m)
-        #diag = sp.simplify(matrix*transform_r)
-    
-    #return transform_l, diag, transform_r
 
 def Zi_left_pinv_with_restrictions(Zi, P1i_tilde_roc, P1i_rpinv):
     """ Given a matrix Zi, this function calculates a matrix such that:
@@ -350,7 +323,6 @@ def is_square_matrix(matrix):
 def is_regular_matrix(matrix):
     assert is_square_matrix(matrix), "Matrix is not a square matrix."
     m, n = matrix.shape
-    #r = matrix.rank()
     r = srank(matrix)
     return True if (r == m) else False
 
@@ -369,4 +341,3 @@ def check_col_compatibilty(*args):
     """ checks if all matrices have same column dimension
     """
     return all(x.shape[1] == args[0].shape[1] for x in args)
-

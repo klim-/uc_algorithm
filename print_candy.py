@@ -37,9 +37,19 @@ def print_line():
 def print_equation_from_list(f, var, sympy=True):
     if sympy==False:
         for k in xrange(0, len(f)):
-            print str(var) + str(k+1) + " = " + str(f[k]) + "\n"
+            print str(var) + "[" + str(k) + "] = " + str(f[k]) + "\n"
     else:
         for k in xrange(0, len(f)):
-            print str(var) + str(k+1) + " ="
-            print_nicely(f[k])    
+            print str(var) + "[" + str(k) + "] ="
+            print_nicely(f[k])
+
+def print_pde_list(pde_list, sympy=True):
+    if sympy==False:
+        for k in xrange(0, len(pde_list)):
+            print "0 = " + str(pde_list[k]) + "\n"
+    else:
+        for k in xrange(0, len(pde_list)):
+            print "0 = "
+            print_nicely(pde_list[k])
+
 

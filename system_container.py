@@ -14,13 +14,14 @@ class SystemStack(object):
     """ container that carries resulting matrizes for the system.
         no calculations here, just store and access of data
     """
-    def __init__(self):
-        self.iteration_data = [] # contains a matrix container for every iteration step (=index
+    def __init__(self, diff_symbols):
+        self.iteration_data = [] # contains a matrix container for every iteration step (=index)
 
         self._vec_x = None # internal variable!
 
         self.vec_xdot = None
         self.diffvec_x = None # consists of vec_x and vec_xdot
+        self.diff_symbols = diff_symbols
 
         # basis and basis 1-form
         self.basis = None
@@ -44,11 +45,12 @@ class SystemStack(object):
         self.vec_xdot = st.perform_time_derivative(self.vec_x, self.vec_x)
 
         # vector for differentiation
-        self.diffvec_x = st.concat_rows(self.vec_x, self.vec_xdot)
+        self.diffvec_x = st.concat_rows(self.vec_x, self.vec_xdot, self.diff_symbols)
 
     def add_iteration(self, iter_stack):
         assert isinstance(iter_stack, IterationStack)
         self.iteration_data.append(iter_stack)
+        iter_stack.print_stack()
 
     def get_iteration(self, i):
         assert type(i)==int, "Iteration step i must be of type integer!"

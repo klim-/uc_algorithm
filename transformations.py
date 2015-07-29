@@ -10,8 +10,6 @@ from algebra import *
 
 from IPython import embed as IPS
 
-show_Gi_matrices = False
-
 # needed noncommutative for G matrix calculation
 t = nct.t
 #s_ = nct.s
@@ -29,7 +27,8 @@ class Transformation(object):
 
         self.calculate_P_Matrix()
         self.calculate_Q_matrix()
-        self.calculate_G_matrix()
+        var = raw_input("Type \"G\" to calculate G(d/dt)-matrix\n")
+        if var=="G": self.calculate_G_matrix()
 
     @property
     def w(self):
@@ -171,16 +170,9 @@ class Transformation(object):
         self.Q = Q
 
     def calculate_G_matrix(self):
-        Gi_list = []
-
-        for i in xrange(self._myStack.iteration_steps()):
-            Gi = self.calculate_Gi_matrix(i)
-            Gi_list.append(Gi)
-
-        G = Gi_list[0]
-        for i in xrange(1, len(Gi_list)):
-            G = G*Gi_list[i]
-            #G = nct.nc_mul(G, Gi_list[i])
+        G = self.calculate_Gi_matrix(0)
+        for i in xrange(self._myStack.iteration_steps()-1):
+            G = G*self.calculate_Gi_matrix(i+1)
 
         # right shift
         G_shifted = self.right_shift_all_in_matrix(G)

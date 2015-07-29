@@ -11,7 +11,7 @@
 #from ex.franke_516 import * # (4.7) eulersche kreisgleichungen ( w[0].d=0; w[1]*(x1**2+x2**2).d = 0 )
 #from ex.franke_517 import * # (4.7) kinematisches fahrzeugmodell (komplizierter!) ( w[0].d^w[0]^w[1] = 0 )
 #from ex.franke_518 import * # hochsetzsteller (dw=0)
-#***from ex.franke_519 import * # **** einradfahrer (kompliziert!!)
+from ex.franke_519 import * # **** einradfahrer (kompliziert!!)
 #from ex.franke_5110 import * # senkrechtstarter (komplizierter!!!, G brauch ewig!)
 #from ex.franke_5111 import * # (4.7) rollendes rad ( hier ist noch was komisch)
 
@@ -33,4 +33,4 @@
 #from ex.levines175 import * 
 
 #from ex.ballintube import *
-from ex.dist_reduction_klippel import *
+#from ex.dist_reduction_klippel import *

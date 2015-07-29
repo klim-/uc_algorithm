@@ -6,7 +6,7 @@ import symb_tools as st
 
 k, m, R_m, R_e, b, L_x, L = sp.symbols("k, m, R_m, R_e, b, L_x, L")
 
-x1, x2, x3 = sp.symbols("x1:4")
+x1, x2, x3 = xx = sp.symbols("x1:4")
 vec_x = sp.Matrix([x1, x2, x3])
 
 vec_xdot = st.perform_time_derivative(vec_x, vec_x)

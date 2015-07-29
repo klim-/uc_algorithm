@@ -15,9 +15,7 @@ class IntegrabilityCheck(object):
         self._myStack = myStack
 
         self.generate_basis()
-
         self.assemble_dual_basis()
-        
         self.integrability_conditions()
 
     def generate_basis(self):
@@ -60,139 +58,116 @@ class IntegrabilityCheck(object):
 
         self._myStack.transformation.w = w_T
 
-    def is_integrable_1(self, w):
-        return all(x.d.is_zero() for x in w)
+    def is_dwi_zero(self, w, i):
+        """ checks if dw_i=0
+        """
+        return True if (w[i].d).is_zero() else False
 
-    def is_integrable_2(self, w, i):
-        for j in xrange(len(w)):
-            if (w[i].d^w[j]).is_zero():
-                print "w[" + str(i) + "].d^w[" + str(j) + "]=0"
-                if i==j:
-                    self.find_pde_w_wedge_wd(w[i])
-                return True
-            elif (w[i].d^w[j].d).is_zero() and j!=i:
-                print "w[" + str(i) + "].d^w[" + str(j) + "].d=0"
-                return True
-        return False
-
-    def integrability_conditions(self):
-        w = self._myStack.transformation.w
-        j = len(w)
-        y = []
-        for i in xrange(j):
-            if (w[i].d).is_zero():
-                print "w[" + str(i) + "].d = 0"
-                print "<-> Integrabilitätsbedingung für w[" + str(i) + "] erfüllt."
-                print "    Der Flache Ausgang wurde berechnet:"
-                y=0
-                for j in xrange(0,len(self._myStack.basis)):
-                    y += sp.integrate(w[i].coeff[j], self._myStack.basis[j])
-                print "y" + str(i+1) + " ="
-                print_nicely(y)
-                print "\n\n"
-            elif self.is_integrable_2(w, i):
-                print "<-> Integrabilitätsbedingung für w[" + str(i) + "] erfüllt.\n\n"
-            else:
-                print "Integrabilitätsbedingung für w[" + str(i) + "] nicht erfüllt.\n\n"
-        
-        #if is_integrable_1(w):
-        #    integrate_1form(w)
-
-    def integrate_1form(self, w):
-        y = []
-        for i in xrange(0,len(w)):
-            y.append(0)
-            for j in xrange(0,len(basis)):
-                y[i] += sp.integrate(w[i].coeff[j],basis[j])
-
-        print "\033[93mDer flache Ausgang wurde berechnet:\033[0m\n"
-        print_equation_from_list(y, "y")
-
-    def integrate_one_form(self, w_coeff):
-        y = 0
-        for i in xrange(0,len(w_coeff)):
-            y += sp.integrate(w_coeff[i],basis[i])
-        
-        y=sp.simplify(y)
-        
-        print "y="
+    def integrate_dwi(self, w, i):
+        print "------"
+        print "w[" + str(i) + "].d = 0"
+        print "------"
+        print "<-> Integrability condition satisfied for w[" + str(i) + "].\n\n"
+        print "Integrating w[" + str(i) + "]:"
+        y=0
+        for j in xrange(0,len(self._myStack.basis)):
+            y += sp.integrate(w[i].coeff[j], self._myStack.basis[j])
+        print "y[" + str(i) + "] ="
         print_nicely(y)
-        return y
+        print "\n\n"
 
-    def find_pde_w_wedge_wd(self, w):
-        a = w.coeff
-        n = len(a) + 1
-        pde_list = []
-        mu = sp.Function('mu')(*self._myStack.vec_x)
-        print "PDGLs wurden berechnet:"
-        for i in xrange(1,n-1):
-            for j in xrange(i+1,n):
-                #print "i=" + str(i) + ", j=" + str(j)
-                pde = a[j-1]*mu.diff(self._myStack.vec_x[i-1]) - a[i-1]*mu.diff(self._myStack.vec_x[j-1]) + mu*a[j-1].diff(self._myStack.vec_x[i-1]) - mu*a[i-1].diff(self._myStack.vec_x[j-1])
-                #IPS
-                print "0 ="
-                print_nicely(pde)
-                try:
-                    sol = sp.pdsolve(pde)
-                    print "Integrierender Faktor wurde berechnet:"
-                    print_nicely(sol)
+    def is_dwi_wedge_wi_zero(self, w, i):
+        """ checks if dw_i^w_i=0
+        """
+        return True if (w[i].d^w[i]).is_zero() else False
 
-                except:
-                    print "Could not solve"
-                    break
-                
-                sol = sol.rhs
-                
-                # berechne einfachsten integrierenden faktor: F(args)=args
-                print "Vereinfachter integrierender Faktor:"
-                args = sol.args
-                funct = None
-                for i in xrange(len(args)):
-                    if isinstance(args[i], sp.Function):
-                        funct = args[i]
-                        break
-                sol_tilde = sol.subs(funct, *funct.args)
-                print_nicely(sol_tilde)
-                    
+    def find_pde_dwi_wedge_wi(self, w, i):
+        """ calculates pdes dw_i^w_i=0 for some j
+        """
+        pde_list = [] # a list of pdes that need to be zero
 
-                
-                print "Damit ergibt sich die integrierbare Einsform:"
-                w_tilde = sol_tilde*w
-                print_nicely(w_tilde)
-                integrate_one_form(w_tilde.coeff)
+        a = w[i].coeff
 
+        n = len(w[i].basis) + 1
+        
+        xx = self._myStack.vec_x
+        
+        mu = sp.Function('mu')(*xx)
+        for k in xrange(1, n-1):
+            for l in xrange(k+1, n):
+                pde =   a[l-1]*mu.diff(xx[k-1]) - a[k-1]*mu.diff(xx[l-1]) +\
+                        mu*a[l-1].diff(xx[k-1]) - mu*a[k-1].diff(xx[l-1])
                 pde_list.append(pde)
         return pde_list
 
-    def reduce_pde(self, pde):
-        # works if pde has only one summand
+    def is_dwi_wedge_wi_wedge_wj_zero(self, w, i):
+        """ checks if dw_i^w_i^w_j=0 for some j
+        """
+        for j in xrange(len(w)):
+            if (not j==i) and (w[i].d^w[i]^w[j]).is_zero():
+                return j
+        return False
+
+    def find_pde_dwi_wedge_wi_wedge_wj(self, w, i, j):
+        """ calculates pdes dw_i^w_i^w_j=0 for some j
+        """
+        pde_list = [] # a list of pdes that need to be zero
         
-        # then the unknown function cannot depend on the differentiation variable
-        asd = True
-        return True if asd else False
+        a = w[i].coeff
+        b = w[j].coeff
+        
+        n = len(w[i].basis) + 1
+        
+        xx = self._myStack.vec_x
+        
+        mu1 = sp.Function('mu_1')(*xx)
+        mu2 = sp.Function('mu_2')(*xx)
+        for k in xrange(1, n-1):
+            for l in xrange(k+1, n):
+                pde =   a[l-1]*mu1.diff(xx[k-1]) - a[k-1]*mu1.diff(xx[l-1]) +\
+                        mu1*a[l-1].diff(xx[k-1]) - mu1*a[k-1].diff(xx[l-1]) +\
+                        b[l-1]*mu2.diff(xx[k-1]) - b[k-1]*mu2.diff(xx[l-1]) +\
+                        mu2*b[l-1].diff(xx[k-1]) - mu2*b[k-1].diff(xx[l-1])
+                pde_list.append(pde)
+        return pde_list
 
-    #def try_integrability_conditions(w):
-
-        ## print output of
-        #for i in xrange(len(w)):
-            #print "w[" + str(i+1) + "].d = " + str(w[i].d)
-
-
-        ## dw_i = 0
-        #if is_integrable_1(w):
-            #print "Integrabilitätsbedingung ist erfüllt <=> dw = 0.\n"
-            #y = []
-            #for i in xrange(0,len(w)):
-                #y.append(0)
-                #for j in xrange(0,len(basis)):
-                    #y[i] += sp.integrate(w[i].coeff[j],basis[j])
-
-            #print "Der flache Ausgang wurde berechnet:\n"
-            #print_equation_from_list(y, "y")
-        ## dw_i^w_i = 0
-        ##elif:
-        ##    pass
-            
-        #else:
-            #print "Integrabilitätsbedingung ist nicht erfüllt <=> dw != 0.\n"
-
+    def integrability_conditions(self):
+        """ this function checks the following integrability conditions:
+                        dw_i=0
+                    dw_i^w_i=0
+            and dw_i^w_i^w_j=0
+        """
+        w = self._myStack.transformation.w
+        #~ j = len(w)
+        for i in xrange(len(w)):
+            if self.is_dwi_zero(w, i):
+                self.integrate_dwi(w, i)
+            elif self.is_dwi_wedge_wi_zero(w,i):
+                print "------"
+                print "w[" + str(i) + "].d^w[" + str(i) + "] = 0"
+                print "------"
+                print "resp."
+                print "du=0 for u=mu1*w["+str(i)+"]"
+                print "<-> Integrability condition satisfied for w[" + str(i) + "].\n\n"
+                var = raw_input("Type \"pde\" to calculate PDE-conditions for mu1\n")
+                if var=="pde":
+                    pde_list = self.find_pde_dwi_wedge_wi(w,i)
+                    print_pde_list(pde_list)
+            # TODO: this is not very elegant (is_dwi_wedge_wi_wedge_wj_zero
+            #       returns integer or False)
+            elif self.is_dwi_wedge_wi_wedge_wj_zero(w, i)!=False:
+                j = self.is_dwi_wedge_wi_wedge_wj_zero(w, i)
+                print "------"
+                print "w[" + str(i) + "].d^w[" + str(i) + "]^w[" + str(j) +"] = 0"
+                print "------"
+                print "resp."
+                print "du=0 for u=mu1*w["+str(i)+"] + mu2*w["+str(j)+"]"
+                print "<-> Integrability condition satisfied for w[" + str(i) + "].\n\n"
+                var = raw_input("Type \"pde\" to calculate PDE-conditions for mu1 and mu2\n")
+                if var=="pde":
+                    pde_list = self.find_pde_dwi_wedge_wi_wedge_wj(w,i,j)
+                    print_pde_list(pde_list)
+            else:
+                print "------"
+                print "Integrability condition not satisfied for w[" + str(i) + "]. Please try manually."
+                print "------\n\n"
