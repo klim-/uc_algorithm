@@ -24,6 +24,9 @@ from print_candy import *
 from system_container import *
 from transformations import *
 
+
+
+
 mode = "auto" # "manual" or "auto"
 
 # raw_input() does not seem to handle empty strings, so this is a
@@ -143,8 +146,8 @@ def reduction(iter_stack):
 
     P1i_dot = st.perform_time_derivative(P1i, myStack.diffvec_x)
 
-    Ai = sp.simplify( (P0i - P1i_dot)*P1i_rpinv )
-    Bi = sp.simplify( (P0i - P1i_dot)*P1i_roc )
+    Ai = custom_simplify( (P0i - P1i_dot)*P1i_rpinv )
+    Bi = custom_simplify( (P0i - P1i_dot)*P1i_roc )
 
     # TODO: this is not very elegant!
     try:
@@ -176,12 +179,12 @@ def fourseven(iter_stack):#, Ai, Bi, P1i_roc, P1i_rpinv):
 
     assert is_regular_matrix(K), "K is not a regular matrix."
 
-    Bi_tilde = sp.simplify(Bi*K1) # unit matrix
+    Bi_tilde = custom_simplify(Bi*K1) # unit matrix
     Bi_tilde_lpinv = left_pseudo_inverse(Bi_tilde)
 
-    P1i_tilde_roc = sp.simplify( P1i_roc*K1 )
+    P1i_tilde_roc = custom_simplify( P1i_roc*K1 )
 
-    Zi = sp.simplify( P1i_roc*K2 )
+    Zi = custom_simplify( P1i_roc*K2 )
 
     Zi_lpinv = Zi_left_pinv_with_restrictions(Zi, P1i_tilde_roc, P1i_rpinv)
 
@@ -217,10 +220,10 @@ def tangent_system():
         P1i = sp.Matrix([])
         P0i = sp.Matrix([])
         for i in xrange(len(myStack.vec_xdot)):
-            vector1 = sp.simplify( F_eq.diff(myStack.vec_xdot[i]) )
+            vector1 = custom_simplify( F_eq.diff(myStack.vec_xdot[i]) )
             P1i = st.concat_cols(P1i, vector1)
 
-            vector0 = sp.simplify( F_eq.diff(myStack.vec_x[i]) )
+            vector0 = custom_simplify( F_eq.diff(myStack.vec_x[i]) )
             P0i = st.concat_cols(P0i, vector0)
     print "\n\n"
     return P1i, P0i

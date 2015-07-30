@@ -11,11 +11,28 @@ pinv_optimization = "free_symbols" # options: "free_symbols", "count_ops", "none
 
 roc = "alt" # options: "alt", "conv"
 
+
+
+def not_simplify(expr, **kwargs):
+    return expr
+
+custom_simplify = sp.simplify
+custom_simplify = not_simplify
+
+
+from timeout import get_timed_simplify
+
+custom_simplify = get_timed_simplify(10)
+
+st.nullspace_simplify_func = custom_simplify
+    
 def srank(matrix):
     """ Computes the rank for symbolic matrices.
     """
     m, n = matrix.shape
+    print "start srn"
     matrix_rand = st.subs_random_numbers(matrix)
+    print "end srn"
     r = matrix_rand.rank()
 
     if r == m:
@@ -29,9 +46,11 @@ def srank(matrix):
             pass
 
 def left_ortho_complement(matrix):
-    assert has_left_ortho_complement(matrix), "There is no leftorthocomplement!"
+    
+    # commented out for performance
+    #assert has_left_ortho_complement(matrix), "There is no leftorthocomplement!"
 
-    v = sp.simplify( st.nullspaceMatrix(matrix.T).T )
+    v = custom_simplify( st.nullspaceMatrix(matrix.T).T )
     assert is_zero_matrix(v*matrix), "Leftorthocomplement is not correct."
     return v
 
@@ -46,7 +65,7 @@ def right_ortho_complement(matrix):
     assert has_right_ortho_complement(matrix), "There is no rightorthocomplement!"
 
     if roc=="conv":
-        v = sp.simplify( st.nullspaceMatrix(matrix) )
+        v = custom_simplify( st.nullspaceMatrix(matrix) )
         assert is_zero_matrix(matrix*v), "Leftorthocomplement is not correct."
         return v
     else:
@@ -150,6 +169,9 @@ def reshape_matrix_columns(P):
     colvecs_sorted = sorted( cols_sorted_by_atoms, key=lambda x: count_zero_entries(x), reverse=True)
 
     # pick m suitable column vectors and add to new matrix A: ----------
+    if len(colvecs_sorted) == 0:
+        from ipHelp import IPS
+        IPS()
     A = colvecs_sorted[0]
     for j in xrange(len(colvecs_sorted)-1):
         column = colvecs_sorted[j+1]
@@ -222,8 +244,8 @@ def right_pseudo_inverse(P):
 
     p = n0-m0
     zero = sp.zeros(p,m0)
-    Q = sp.simplify(A_inv)
-    P_pinv = sp.simplify( R*st.concat_rows(Q,zero) )
+    Q = custom_simplify(A_inv)
+    P_pinv = custom_simplify( R*st.concat_rows(Q,zero) )
 
     assert is_unit_matrix(P*P_pinv), "Rightpseudoinverse is not correct."
     return P_pinv
@@ -236,12 +258,12 @@ def alternative_right_ortho_complement(P):
     A_det = A.berkowitz_det()
     A_inv = A.adjugate()/A_det
 
-    minusAinvB = sp.simplify(-A_inv*B)
+    minusAinvB = custom_simplify(-A_inv*B)
 
     p = n0-m0
     unit_matrix = sp.eye(p)
-    Q = sp.simplify(A_inv)
-    P_roc = sp.simplify( R*st.concat_rows(minusAinvB, unit_matrix) )
+    Q = custom_simplify(A_inv)
+    P_roc = custom_simplify( R*st.concat_rows(minusAinvB, unit_matrix) )
 
     assert is_zero_matrix(P*P_roc), "Right orthocomplement is not correct."
     return P_roc
@@ -261,7 +283,8 @@ def Zi_left_pinv_with_restrictions(Zi, P1i_tilde_roc, P1i_rpinv):
     assert is_regular_matrix(C), "C is not a regular matrix"
     C_det = C.berkowitz_det()
     C_inv = C.adjugate()/C_det
-    C_inv = sp.simplify(C.inv())
+    C_inv = custom_simplify(C_inv)
+    #C_inv = custom_simplify(C.inv())  # !!!
     #C_inv = C.inv()
 
     m, n = Zi.shape
@@ -282,7 +305,7 @@ def Zi_left_pinv_with_restrictions(Zi, P1i_tilde_roc, P1i_rpinv):
 
 
 def is_symbolically_zero_matrix(matrix):
-    matrix = sp.simplify(matrix)
+    matrix = custom_simplify(matrix)
     m, n = matrix.shape
     zero_matrix = sp.zeros(m,n)
     return True if (matrix == zero_matrix) else False
@@ -296,7 +319,7 @@ def is_zero_matrix(matrix):
     return True
 
 def is_symbolically_unit_matrix(matrix):
-    matrix = sp.simplify(matrix)
+    matrix = custom_simplify(matrix)
     m, n = matrix.shape
     assert is_square_matrix(matrix), "Matrix is not a square matrix."
     unit_matrix = sp.eye(m)
