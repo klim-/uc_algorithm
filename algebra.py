@@ -22,16 +22,19 @@ custom_simplify = not_simplify
 
 from timeout import get_timed_simplify
 
-custom_simplify = get_timed_simplify(10)
+custom_simplify = get_timed_simplify(20)
 
 st.nullspace_simplify_func = custom_simplify
+
+# Primzahlen in subs_random_numbers nutzen?
+srn_prime = True
     
 def srank(matrix):
     """ Computes the rank for symbolic matrices.
     """
     m, n = matrix.shape
     print "start srn"
-    matrix_rand = st.subs_random_numbers(matrix)
+    matrix_rand = st.subs_random_numbers(matrix, prime=srn_prime)
     print "end srn"
     r = matrix_rand.rank()
 
@@ -215,6 +218,8 @@ def reshape_matrix_columns(P):
     for i in xrange(n0-m0):
         B = st.concat_cols(B,tmp.col(m0+i))
 
+    from ipHelp import IPS
+    IPS()
     assert is_zero_matrix( (P*R) - st.concat_cols(A,B)), "A problem occured in reshaping the matrix."
 
     return A, B, R
@@ -311,7 +316,7 @@ def is_symbolically_zero_matrix(matrix):
     return True if (matrix == zero_matrix) else False
 
 def is_zero_matrix(matrix):
-    m_rand = st.subs_random_numbers(matrix)
+    m_rand = st.subs_random_numbers(matrix, prime=srn_prime)
 
     for i in xrange(len(m_rand)):
         if not np.allclose(float(m_rand[i]), 0):
@@ -328,7 +333,7 @@ def is_symbolically_unit_matrix(matrix):
 def is_unit_matrix(matrix):
     assert is_square_matrix(matrix), "Matrix is not a square matrix."
     m, n = matrix.shape
-    m_rand = st.subs_random_numbers(matrix)
+    m_rand = st.subs_random_numbers(matrix, prime=srn_prime)
 
     for i in xrange(len(m_rand)):
         if i%(m+1)==0:

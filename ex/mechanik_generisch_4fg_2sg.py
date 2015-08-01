@@ -63,7 +63,8 @@ BB = sp.Matrix(eq_coeffsB)
 CC = sp.Matrix(eq_coeffsC)
 
 
-eq_mech = AA*theta + BB*mu + CC*mudot
+#eq_mech = AA*theta + BB*mu + CC*mudot
+eq_mech = AA*theta + BB*thetadot + CC*mudot
 
 F_eq = st.row_stack(eq_defin, eq_mech)
 
