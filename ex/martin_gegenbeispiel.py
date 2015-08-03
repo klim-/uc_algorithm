@@ -19,3 +19,5 @@ F_eq = sp.Matrix([
 [ -x6 + x7*x4*xdot1 - xdot5 ],
 [ -x7 - x5*xdot1 - x7*xdot3 + (x4 + xdot1)*x4*xdot1 - xdot6 ],
 [ x4 + xdot1 - xdot7 ]])
+
+

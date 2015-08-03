@@ -38,15 +38,18 @@ def srank(matrix):
     print "end srn"
     r = matrix_rand.rank()
 
-    if r == m:
-        return r
-    else:
-        r_symb = matrix.rank()
-        if r == r_symb:
-            return r
-        else:
-            # TODO: was hier? bisher noch nicht aufgetreten. tests?
-            pass
+    
+    return r
+    #if r == m:
+        #return r
+    #else:
+        #r_symb = matrix.rank()
+        #if r == r_symb:
+            #return r
+        #else:
+            ## TODO: was hier? bisher noch nicht aufgetreten. tests?
+            #raise NotImplementedError
+            #pass
 
 def left_ortho_complement(matrix):
     
@@ -116,14 +119,18 @@ def remove_zero_columns(matrix):
     return M
 
 def is_linearly_independent(matrix, column_vector):
-    # TODO: mit zahleneinsatz testen! st.subs_random_numbers()
-    # dann mit rank und für beispiele ein vernünftiges epsilon finden
+    
     m, n = matrix.shape
-    for i in xrange(n):
-        tmp = st.concat_cols(matrix.col(i),column_vector)
-        if srank(tmp)!=2:
-            return False
-    return True
+    
+    
+    # ck: stark veränder (war vorher falsch)
+    rank1 = srank(matrix)
+    tmp = st.concat_cols(matrix, column_vector)
+    rank2 = srank(tmp)
+    
+    assert rank2 >= rank1
+        
+    return rank2 > rank1
 
 def matrix_to_vectorlist(matrix):
     m, n = matrix.shape
@@ -184,6 +191,9 @@ def reshape_matrix_columns(P):
         if srank(A)==m1:
             break
 
+    # ck: sollte eigentlich gelten, oder?
+    assert A.is_square
+            
     # calculate transformation matrix R: -------------------------------
     #R_tilde = sp.Matrix([])
     used_cols = []
@@ -218,8 +228,7 @@ def reshape_matrix_columns(P):
     for i in xrange(n0-m0):
         B = st.concat_cols(B,tmp.col(m0+i))
 
-    from ipHelp import IPS
-    IPS()
+    
     assert is_zero_matrix( (P*R) - st.concat_cols(A,B)), "A problem occured in reshaping the matrix."
 
     return A, B, R

@@ -50,7 +50,7 @@ class Transformation(object):
         AB_nc_shifted = self.right_shift_all_in_matrix(AB_nc)
         AB_shifted_c = self.make_symbols_commutative(AB_nc_shifted)
         extr_result = list(AB_shifted_c)[0]
-        result = sp.simplify(extr_result)
+        result = custom_simplify(extr_result)
 
         return result
 
@@ -110,9 +110,10 @@ class Transformation(object):
         # @carsten: ist diese funktion wirklich notwendig?
         m,n = matrix.shape
         matrix_shifted = sp.Matrix([])
+        t_dep_symbols = [symb for symb in st.atoms(matrix, sp.Symbol) if not symb == s]
         for i in xrange(n):
             col = matrix.col(i)
-            col_shifted = sp.Matrix([nct.right_shift_all(expr,s,t,expr.atoms(sp.Symbol)) for expr in col])
+            col_shifted = sp.Matrix([nct.right_shift_all(expr,s,t, t_dep_symbols) for expr in col])
             matrix_shifted = st.concat_cols(matrix_shifted, col_shifted)
 
         return matrix_shifted
@@ -229,7 +230,7 @@ class Transformation(object):
 
             Gi = st.concat_cols(Gi, Z_nc)
 
-        if show_Gi_matrices:
+        if False: #show_Gi_matrices:
             print_matrix("G", i, "", Gi)
 
         # store

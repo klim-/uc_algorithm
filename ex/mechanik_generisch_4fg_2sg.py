@@ -3,7 +3,7 @@ import sympy as sp
 import rst_symbtools.symb_tools as st
 
 Ndf = 4  # Anzahl der Freiheitsgrade
-Nin = 2  # Anzahl der Eingänge
+Nin = 3  # Anzahl der Eingänge
 
 Neq = Ndf - Nin  # Anzahl der mechanischen Gleichungen (ohne definitorische)
 
