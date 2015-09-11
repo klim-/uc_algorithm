@@ -63,13 +63,20 @@ class SystemStack(object):
         self.iteration_data[i].print_stack()
 
     def get_outliers(self):
-        counter = 0
+        #~ counter = 0
         outliers = [0]*self.iteration_steps() # list [0,0,0,...,1,..,0] (1:=outlier)
         for i in xrange(self.iteration_steps()):
             if self.iteration_data[i].is_outlier == True:
-                counter += 1
+                #~ counter += 1
                 outliers[i] = 1
-        return counter, outliers
+        return outliers
+        #~ return counter, outliers
+
+    def outlier_in_between(outliers):
+        if (outlier.count(1)>=0) and (outlier.index(1)<(len(outlier))):
+            return True
+        else:
+            return False
 
     def get_Q_relevant_matrices(self):
         """ all P1i and Zi_lpinv matrices in correct order, so these just have to
@@ -92,7 +99,7 @@ class SystemStack(object):
                 else:
                     P1i = self.iteration_data[i].P1
                     Q_tilde_relevant_matrices.append(P1i)
-        elif outliers.count(1) > 1:
+        elif outlier_in_between(outliers):
             # TODO: what if there is more than one outlier?
             #       there should be 2*(outliers.count(1)) row vectors
             #       in Q_tilde then

@@ -283,16 +283,17 @@ def alternative_right_ortho_complement(P):
     return P_roc
 
 
-def Zi_left_pinv_with_restrictions(Zi, P1i_tilde_roc, P1i_rpinv):
+def Zi_left_pinv_with_restrictions(P1i_rpinv, P1i_tilde_roc, Zi):
     """ Given a matrix Zi, this function calculates a matrix such that:
             Zi_left_pinv * Zi            = I
             Zi_left_pinv * P1i_tilde_roc = 0
             Zi_left_pinv * P1i_rpinv     = 0
     """
-    assert check_row_compatibility(Zi, P1i_tilde_roc, P1i_rpinv),\
+    assert check_row_compatibility(P1i_rpinv, P1i_tilde_roc, Zi),\
         "Matrices do not match in row dimension."
 
-    C = st.concat_cols(Zi, P1i_tilde_roc, P1i_rpinv)
+    #~ C = st.concat_cols(Zi, P1i_tilde_roc, P1i_rpinv)
+    C = st.concat_cols(P1i_rpinv, P1i_tilde_roc, Zi)
 
     assert is_regular_matrix(C), "C is not a regular matrix"
     C_det = C.berkowitz_det()
@@ -303,7 +304,7 @@ def Zi_left_pinv_with_restrictions(Zi, P1i_tilde_roc, P1i_rpinv):
 
     m, n = Zi.shape
     Zi_left_pinv = sp.Matrix([])
-    for i in xrange(0,n):
+    for i in xrange(m-n,m):
         Zi_left_pinv = st.concat_rows(Zi_left_pinv,C_inv.row(i))
 
     o, p = Zi_left_pinv.shape

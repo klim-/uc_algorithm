@@ -7,6 +7,7 @@ nichtlineare Systeme von Dr. Matthias Franke, TU Dresden
 
 # enable true divison
 from __future__ import division
+import sys
 
 from IPython import embed as IPS
 
@@ -17,7 +18,6 @@ import diffgeopy as ct
 
 
 from algebra import *
-from examples import *
 from integrability import *
 from matrix_container import *
 from print_candy import *
@@ -25,6 +25,7 @@ from system_container import *
 from transformations import *
 
 
+from examples import *
 
 
 mode = "auto" # "manual" or "auto"
@@ -186,7 +187,7 @@ def fourseven(iter_stack):#, Ai, Bi, P1i_roc, P1i_rpinv):
 
     Zi = custom_simplify( P1i_roc*K2 )
 
-    Zi_lpinv = Zi_left_pinv_with_restrictions(Zi, P1i_tilde_roc, P1i_rpinv)
+    Zi_lpinv = Zi_left_pinv_with_restrictions(P1i_rpinv, P1i_tilde_roc, Zi)
 
     assert is_unit_matrix( Zi_lpinv*Zi ), "Zi_lpinv seems to be wrong."
 
