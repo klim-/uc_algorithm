@@ -10,7 +10,7 @@ from IPython import embed as IPS
 pinv_optimization = "free_symbols" # options: "free_symbols", "count_ops", "none"
 
 roc = "alt" # options: "alt", "conv"
-
+debug = False
 
 
 def not_simplify(expr, **kwargs):
@@ -33,9 +33,9 @@ def srank(matrix):
     """ Computes the rank for symbolic matrices.
     """
     m, n = matrix.shape
-    print "start srn"
+    if debug==True: print "start srn"
     matrix_rand = st.subs_random_numbers(matrix, prime=srn_prime)
-    print "end srn"
+    if debug==True: print "end srn"
     r = matrix_rand.rank()
 
     

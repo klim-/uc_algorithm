@@ -8,6 +8,7 @@ nichtlineare Systeme von Dr. Matthias Franke, TU Dresden
 # enable true divison
 from __future__ import division
 import sys
+import importlib
 
 from IPython import embed as IPS
 
@@ -24,9 +25,16 @@ from print_candy import *
 from system_container import *
 from transformations import *
 
+try:
+    # import example
+    example = importlib.import_module(sys.argv[1])
+except ImportError:
+    raise ImportError('The argument ' + str(sys.argv[1]) + ' does not seem to point to a valid example.')
 
-from examples import *
-
+if hasattr(example, 'diff_symbols'):
+    diff_symbols = example.diff_symbols
+else:
+    diff_symbols = sp.Matrix([])
 
 mode = "auto" # "manual" or "auto"
 
@@ -35,7 +43,7 @@ mode = "auto" # "manual" or "auto"
 auto = None
 
 myStack = SystemStack(diff_symbols)
-myStack.vec_x = vec_x
+myStack.vec_x = example.vec_x
 print "x ="; print_nicely(myStack.vec_x)
 print "\n\n xdot ="; print_nicely(myStack.vec_xdot)
 
@@ -216,15 +224,15 @@ def tangent_system():
     try:
         P1i # in case the system is given by the matrices P1i and P0i
     except NameError:
-        print "\n\n0 = F(x,xdot) ="; print_nicely(F_eq)
+        print "\n\n0 = F(x,xdot) ="; print_nicely(example.F_eq)
 
         P1i = sp.Matrix([])
         P0i = sp.Matrix([])
         for i in xrange(len(myStack.vec_xdot)):
-            vector1 = custom_simplify( F_eq.diff(myStack.vec_xdot[i]) )
+            vector1 = custom_simplify( example.F_eq.diff(myStack.vec_xdot[i]) )
             P1i = st.concat_cols(P1i, vector1)
 
-            vector0 = custom_simplify( F_eq.diff(myStack.vec_x[i]) )
+            vector0 = custom_simplify( example.F_eq.diff(myStack.vec_x[i]) )
             P0i = st.concat_cols(P0i, vector0)
     print "\n\n"
     return P1i, P0i

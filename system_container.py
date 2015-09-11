@@ -88,7 +88,8 @@ class SystemStack(object):
             Q_relevant_matrices.append(P1i)
 
         Q_tilde_relevant_matrices = []
-        number_of_outliers, outliers = self.get_outliers()
+        #~ number_of_outliers, outliers = self.get_outliers()
+        outliers = self.get_outliers()
 
         if outliers.count(1) == 1:
             outlier_iteration = outliers.index(1)
