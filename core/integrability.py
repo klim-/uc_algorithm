@@ -25,8 +25,6 @@ import util.print_candy as pc
 from IPython import embed as IPS
 
 class IntegrabilityCheck(object):
-    """ the system is flat iff a one form w exists such that dw=0.
-    """
     def __init__(self, myStack):
         self._myStack = myStack
 

@@ -26,9 +26,9 @@ import util.print_candy as pc
 
 from IPython import embed as IPS
 
-# needed noncommutative for G matrix calculation
+# needed for noncommutative G matrix calculation
 t = nct.t
-#s_ = nct.s
+
 s = sp.Symbol("s", commutative=False)
 s_=s
 class Transformation(object):
@@ -80,7 +80,7 @@ class Transformation(object):
                        for s in nc_symbols]
 
         tup_list = zip(nc_symbols, new_symbols)
-        return expr.subs(zip(nc_symbols, new_symbols))#, tup_list
+        return expr.subs(zip(nc_symbols, new_symbols))
 
     def convert_to_nc_matrices(self, *args):
         """ Converts commutative symbols x with non commutative symbols z
@@ -110,7 +110,7 @@ class Transformation(object):
                        for s in nc_symbols]
 
         tup_list = zip(new_symbols, nc_symbols)
-        return expr.subs(zip(nc_symbols, new_symbols))#, tup_list
+        return expr.subs(zip(nc_symbols, new_symbols))
 
     def all_nc(self, matrix):
         """ checks if matrix is fully non commutative
@@ -118,12 +118,10 @@ class Transformation(object):
         for i in list(matrix.atoms(sp.Symbol)):
             if i.is_commutative:
                 return False
-        # wenn es eine reine Zahlenmatrix ist kommt ebenfalls True raus
-        # ist das gut?
         return True
 
     def right_shift_all_in_matrix(self, matrix):
-        # @carsten: ist diese funktion wirklich notwendig?
+        # does nct-package provide this already?
         m,n = matrix.shape
         matrix_shifted = sp.Matrix([])
         t_dep_symbols = [symb for symb in st.atoms(matrix, sp.Symbol) if not symb == s]
@@ -162,12 +160,6 @@ class Transformation(object):
 
         Q_relevant_matrices, Q_tilde_relevant_matrices = self._myStack.get_Q_relevant_matrices()
 
-
-        #Q_matrix = self.multiply_matrices_in_list( Q_relevant_matrices )
-
-        #if not len(Q_tilde_relevant_matrices)==0:
-            #Q_tilde = self.multiply_matrices_in_list( Q_tilde_relevant_matrices )
-            #Q_matrix = st.concat_rows(Q_matrix, Q_tilde)
         Q1 = self.multiply_matrices_in_list( Q_relevant_matrices )
 
         if not len(Q_tilde_relevant_matrices)==0:
@@ -191,7 +183,6 @@ class Transformation(object):
         for i in xrange(self._myStack.iteration_steps()-1):
             G = G*self.calculate_Gi_matrix(i+1)
 
-        # right shift
         G_shifted = self.right_shift_all_in_matrix(G)
 
         print "G-matrix = "
@@ -200,31 +191,22 @@ class Transformation(object):
         self.G = G_shifted
 
     def calculate_Gi_matrix(self, i):
-        # 1) richtige matrizen für Gi[d/dt] raussuchen
-        # 2) symbole durch nichtkommutative ersetzen, Gi[d/dt] ausrechnen
+        # 1) choose correct matrices for Gi[d/dt]
+        # 2) change symbols to noncommutative symbols, calculate Gi[d/dt]
         # 3) G[d/dt] = G0[d/dt] * G1[d/dt] * ... * Gi[d/dt]
-        # 4) sonderfallbehandlung 4.7 (ähnlich)
+        # 4) special case procedure
         iteration = self._myStack.get_iteration(i)
 
-        if not iteration.is_outlier:
+        if not iteration.is_special_case:
             # get matrices
             P1_rpinv = iteration.P1_rpinv
             P1_roc = iteration.P1_roc
             B_lpinv = iteration.B_lpinv
             A = iteration.A
-
-            # convert commutative symbols to non commutative
-            #P1_rpinv_nc = list( self.make_symbols_non_commutative(P1_rpinv) )[0]
             
             P1_rpinv_nc, P1_roc_nc, B_lpinv_nc, A_nc = self.convert_to_nc_matrices(P1_rpinv, P1_roc, B_lpinv, A)
-            
-            #~ P1_rpinv_nc = self.make_symbols_non_commutative(P1_rpinv)
-            #~ P1_roc_nc = self.make_symbols_non_commutative(P1_roc)
-            #~ B_lpinv_nc = self.make_symbols_non_commutative(B_lpinv)
-            #~ A_nc = self.make_symbols_non_commutative(A)
 
             Gi = P1_rpinv_nc - P1_roc_nc*( B_lpinv_nc*s_ + B_lpinv_nc*A_nc )
-            #Gi = P1_rpinv_nc - nct.nc_mul(P1_roc_nc, nct.nc_mul(B_lpinv_nc,s) + nct.nc_mul(B_lpinv_nc, A_nc))
 
         else:
             # get matrices
@@ -242,11 +224,11 @@ class Transformation(object):
             Z_nc = self.make_symbols_non_commutative(Z)
 
             Gi = P1_rpinv_nc - P1_tilde_roc_nc*( B_tilde_lpinv_nc*s_ + B_tilde_lpinv_nc*A_nc )
-            #Gi = P1_rpinv_nc - nct.nc_mul(P1_tilde_roc_nc, nct.nc_mul(B_tilde_lpinv_nc,s) + nct.nc_mul(B_tilde_lpinv_nc, A_nc))
 
             Gi = st.concat_cols(Gi, Z_nc)
 
-        if False: #show_Gi_matrices:
+        if False:
+            # show_Gi_matrices:
             pc.print_matrix("G", i, "", Gi)
 
         # store

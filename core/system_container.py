@@ -77,18 +77,17 @@ class SystemStack(object):
     def print_iteration(self, i):
         self.iteration_data[i].print_stack()
 
-    def get_outliers(self):
+    def get_special_cases(self):
         #~ counter = 0
-        outliers = [0]*self.iteration_steps() # list [0,0,0,...,1,..,0] (1:=outlier)
+        special_cases = [0]*self.iteration_steps() # list [0,0,0,...,1,..,0] (1:=special_case)
         for i in xrange(self.iteration_steps()):
-            if self.iteration_data[i].is_outlier == True:
+            if self.iteration_data[i].is_special_case == True:
                 #~ counter += 1
-                outliers[i] = 1
-        return outliers
-        #~ return counter, outliers
+                special_cases[i] = 1
+        return special_cases
 
-    def outlier_in_between(self, outlier):
-        if (outlier.count(1)>0) and (outlier.index(1)<(len(outlier))):
+    def special_case_in_between(self, special_cases):
+        if (special_cases.count(1)>0) and (special_cases.index(1)<(len(special_cases))):
             return True
         else:
             return False
@@ -104,18 +103,18 @@ class SystemStack(object):
 
         Q_tilde_relevant_matrices = []
 
-        outliers = self.get_outliers()
+        special_cases = self.get_special_cases()
 
-        if outliers.count(1) == 1:
-            outlier_iteration = outliers.index(1)
+        if special_cases.count(1) == 1:
+            special_cases_iteration = special_cases.index(1)
             for i in xrange(self.iteration_steps()):
-                if i==outlier_iteration:
+                if i==special_cases_iteration:
                     Zi_lpinv = self.iteration_data[i].Z_lpinv
                     Q_tilde_relevant_matrices.append(Zi_lpinv)
                 else:
                     P1i = self.iteration_data[i].P1
                     Q_tilde_relevant_matrices.append(P1i)
-        elif self.outlier_in_between(outliers):
+        elif self.special_case_in_between(special_cases):
             raise NotImplementedError
 
         return Q_relevant_matrices, Q_tilde_relevant_matrices

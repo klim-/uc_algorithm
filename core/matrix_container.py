@@ -26,7 +26,7 @@ class IterationStack(object):
     def __init__(self, iteration, P1, P0):
         self.i = iteration
 
-        self.is_outlier = False
+        self.is_special_case = False
         self.last_iter_step = False # might not be necessary
 
         self.P1 = P1
@@ -41,7 +41,7 @@ class IterationStack(object):
         self.B_loc = None
         self.B_lpinv = None
 
-        ## outlier 4.7
+        # special case
         self.Z = None
         self.Z_lpinv = None
         self.B_tilde = None
@@ -58,8 +58,8 @@ class IterationStack(object):
         self.P1_rpinv = P1_rpinv
         self.P1_dot = P1_dot
 
-    def store_outlier_matrices(self, Z, Z_lpinv, B_tilde, B_tilde_lpinv, P1_tilde_roc):
-        self.is_outlier = True
+    def store_special_case_matrices(self, Z, Z_lpinv, B_tilde, B_tilde_lpinv, P1_tilde_roc):
+        self.is_special_case = True
         self.Z = Z
         self.Z_lpinv = Z_lpinv
         self.B_tilde = B_tilde
@@ -70,7 +70,7 @@ class IterationStack(object):
         self.B_loc = B_loc
 
     def get_Gi_matrices(self):
-        if self.is_outlier:
+        if self.is_special_case:
             return P1_rpinv, P1_tilde_roc, B_tilde_lpinv, A, Z
         else:
             return P1_rpinv, P1_roc, B_lpinv, A
@@ -92,8 +92,8 @@ class IterationStack(object):
         pc.print_matrix("B", self.i, "_loc", self.B_loc)
         pc.print_matrix("B", self.i, "_lpinv", self.B_lpinv)
         
-        if self.is_outlier:
-            pc.print_outlier_line()
+        if self.is_special_case:
+            pc.print_special_case_line()
 
             pc.print_matrix("B", self.i, "_tilde", self.B_tilde)
             pc.print_matrix("B", self.i, "_tilde_lpinv", self.B_tilde_lpinv)
@@ -112,8 +112,8 @@ class IterationStack(object):
         pc.print_matrix("B", self.i, "_loc", self.B_loc)
         pc.print_matrix("B", self.i, "_lpinv", self.B_lpinv)
         
-        if self.is_outlier:
-            pc.print_outlier_line()
+        if self.is_special_case:
+            pc.print_special_case_line()
 
             pc.print_matrix("B", self.i, "_tilde", self.B_tilde)
             pc.print_matrix("B", self.i, "_tilde_lpinv", self.B_tilde_lpinv)

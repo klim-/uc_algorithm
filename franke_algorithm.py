@@ -33,7 +33,7 @@ from IPython import embed as IPS
 import numpy as np
 import sympy as sp
 import symb_tools as st
-import diffgeopy as ct
+import diffgeopy as ct # PyCartan
 
 import core.algebra as al
 import core.matrix_container as mc
@@ -49,6 +49,7 @@ try:
 except ImportError:
     raise ImportError('The argument ' + str(sys.argv[1]) + ' does not seem to point to a valid example.')
 
+# vector for optional time dependent variables, specified in examples file
 if hasattr(example, 'diff_symbols'):
     diff_symbols = example.diff_symbols
 else:
@@ -71,10 +72,8 @@ def end_condition(Bi):
     n, p = Bi.shape
     return True if (n == al.srank(Bi)) else False
 
-def outlier(Bi):
-    """ sonderfall 4.7
-        tritt auf wenn Bi linear abhängige spalten aufweisst bzw.
-        keinen vollen spaltenrang hat
+def is_special_case(Bi):
+    """ Checks for special case
     """
     n, p = Bi.shape
     return True if (al.srank(Bi) < p) else False
@@ -217,7 +216,7 @@ def fourseven(iter_stack):
     assert al.is_unit_matrix( Zi_lpinv*Zi ), "Zi_lpinv seems to be wrong."
 
     # store
-    iter_stack.store_outlier_matrices( Zi, Zi_lpinv, Bi_tilde, Bi_tilde_lpinv, P1i_tilde_roc )
+    iter_stack.store_special_case_matrices( Zi, Zi_lpinv, Bi_tilde, Bi_tilde_lpinv, P1i_tilde_roc )
 
     return Bi_tilde
 
@@ -277,7 +276,7 @@ def main():
 
         assert not al.is_zero_matrix(Bi), "System ist not flat!"
 
-        if outlier(Bi):
+        if is_special_case(Bi):
             # special case
            Bi = fourseven(myIteration)
 

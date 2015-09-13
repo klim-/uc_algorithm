@@ -124,11 +124,8 @@ def remove_zero_columns(matrix):
     return M
 
 def is_linearly_independent(matrix, column_vector):
-    
     m, n = matrix.shape
-    
-    
-    # ck: stark veränder (war vorher falsch)
+
     rank1 = srank(matrix)
     tmp = st.concat_cols(matrix, column_vector)
     rank2 = srank(tmp)
@@ -297,15 +294,12 @@ def Zi_left_pinv_with_restrictions(P1i_rpinv, P1i_tilde_roc, Zi):
     assert check_row_compatibility(P1i_rpinv, P1i_tilde_roc, Zi),\
         "Matrices do not match in row dimension."
 
-    #~ C = st.concat_cols(Zi, P1i_tilde_roc, P1i_rpinv)
     C = st.concat_cols(P1i_rpinv, P1i_tilde_roc, Zi)
 
     assert is_regular_matrix(C), "C is not a regular matrix"
     C_det = C.berkowitz_det()
     C_inv = C.adjugate()/C_det
     C_inv = custom_simplify(C_inv)
-    #C_inv = custom_simplify(C.inv())  # !!!
-    #C_inv = C.inv()
 
     m, n = Zi.shape
     Zi_left_pinv = sp.Matrix([])
@@ -316,7 +310,6 @@ def Zi_left_pinv_with_restrictions(P1i_rpinv, P1i_tilde_roc, Zi):
     assert o==n and p==m, "There must have been a problem with the\
                             computation of Zi_left_pinv"
 
-    #IPS()
     assert is_unit_matrix(Zi_left_pinv*Zi), "Zi_left_pinv is wrong"
     assert is_zero_matrix(Zi_left_pinv*P1i_tilde_roc), "Zi_left_pinv is wrong"
     assert is_zero_matrix(Zi_left_pinv*P1i_rpinv), "Zi_left_pinv is wrong"
@@ -371,7 +364,6 @@ def is_regular_matrix(matrix):
 
 def has_full_row_rank(matrix):
     m, n = matrix.shape
-    #r = matrix.rank()
     r = srank(matrix)
     return True if (m==r) else False
 

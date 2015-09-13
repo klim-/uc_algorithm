@@ -43,7 +43,7 @@ def print_nicely(formula):
 def print_next_iteration(i):
     print "i = " + str(i) + " " + string_line[len(str(i))+5:]
 
-def print_outlier_line():
+def print_special_case_line():
     txt = "--- Sonderfall 4.7 "
     print txt + string_line2[len(txt):]
 
