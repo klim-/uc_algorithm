@@ -21,8 +21,8 @@ import sympy as sp
 import symb_tools as st
 import diffgeopy as ct
 
-from print_candy import *
-from matrix_container import *
+from core.matrix_container import *
+from util.print_candy import *
 
 from IPython import embed as IPS
 

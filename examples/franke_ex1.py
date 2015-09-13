@@ -2,7 +2,7 @@
 # enable true divison
 from __future__ import division
 import sympy as sp
-import rst_symbtools.symb_tools as st
+import symb_tools as st
 
 x1, x2, x3, x4, x5 = sp.symbols("x1, x2, x3, x4, x5")
 vec_x = sp.Matrix([x1, x2, x3, x4, x5])

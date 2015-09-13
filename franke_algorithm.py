@@ -37,12 +37,12 @@ import symb_tools as st
 import diffgeopy as ct
 
 
-from algebra import *
-from integrability import *
-from matrix_container import *
-from print_candy import *
-from system_container import *
-from transformations import *
+from core.algebra import *
+from core.integrability import *
+from core.matrix_container import *
+from core.system_container import *
+from core.transformations import *
+from util.print_candy import *
 
 try:
     # import example

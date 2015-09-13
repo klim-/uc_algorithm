@@ -16,7 +16,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from print_candy import *
+from util.print_candy import *
 
 from IPython import embed as IPS
 

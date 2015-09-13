@@ -20,7 +20,7 @@ import sympy as sp
 import diffgeopy as ct
 import symb_tools as st
 
-from print_candy import *
+from util.print_candy import *
 
 from IPython import embed as IPS
 

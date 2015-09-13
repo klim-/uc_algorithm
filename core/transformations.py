@@ -21,8 +21,8 @@ import numpy as np
 import symb_tools as st
 import non_commutative_tools as nct
 
-from print_candy import *
-from algebra import *
+from core.algebra import *
+from util.print_candy import *
 
 from IPython import embed as IPS
 

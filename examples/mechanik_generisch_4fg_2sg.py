@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import sympy as sp
-import rst_symbtools.symb_tools as st
+import symb_tools as st
 
 Ndf = 4  # Anzahl der Freiheitsgrade
 Nin = 3  # Anzahl der Eingänge

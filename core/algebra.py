@@ -36,7 +36,7 @@ custom_simplify = sp.simplify
 custom_simplify = not_simplify
 
 
-from timeout import get_timed_simplify
+from util.timeout import get_timed_simplify
 
 custom_simplify = get_timed_simplify(20)
 

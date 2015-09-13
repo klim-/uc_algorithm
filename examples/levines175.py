@@ -2,7 +2,7 @@
 # enable true divison
 #from __future__ import division
 import sympy as sp
-import rst_symbtools.symb_tools as st
+import symb_tools as st
 
 
 
