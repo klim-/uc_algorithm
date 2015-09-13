@@ -20,7 +20,7 @@ import sympy as sp
 import diffgeopy as ct
 import symb_tools as st
 
-from util.print_candy import *
+import util.print_candy as pc
 
 from IPython import embed as IPS
 
@@ -89,7 +89,7 @@ class IntegrabilityCheck(object):
         for j in xrange(0,len(self._myStack.basis)):
             y += sp.integrate(w[i].coeff[j], self._myStack.basis[j])
         print "y[" + str(i) + "] ="
-        print_nicely(y)
+        pc.print_nicely(y)
         print "\n\n"
 
     def is_dwi_wedge_wi_zero(self, w, i):
@@ -168,7 +168,7 @@ class IntegrabilityCheck(object):
                 var = raw_input("Type \"pde\" to calculate PDE-conditions for mu1\n")
                 if var=="pde":
                     pde_list = self.find_pde_dwi_wedge_wi(w,i)
-                    print_pde_list(pde_list)
+                    pc.print_pde_list(pde_list)
             # TODO: this is not very elegant (is_dwi_wedge_wi_wedge_wj_zero
             #       returns integer or False)
             elif self.is_dwi_wedge_wi_wedge_wj_zero(w, i)!=False:
@@ -182,7 +182,7 @@ class IntegrabilityCheck(object):
                 var = raw_input("Type \"pde\" to calculate PDE-conditions for mu1 and mu2\n")
                 if var=="pde":
                     pde_list = self.find_pde_dwi_wedge_wi_wedge_wj(w,i,j)
-                    print_pde_list(pde_list)
+                    pc.print_pde_list(pde_list)
             else:
                 print "------"
                 print "Integrability condition not satisfied for w[" + str(i) + "]. Please try manually."

@@ -21,8 +21,8 @@ import numpy as np
 import symb_tools as st
 import non_commutative_tools as nct
 
-from core.algebra import *
-from util.print_candy import *
+import core.algebra as al
+import util.print_candy as pc
 
 from IPython import embed as IPS
 
@@ -55,8 +55,8 @@ class Transformation(object):
         self._w = value
 
         # print when set
-        print_equation_from_list(self.w, "w", sympy=False)
-        print_line()
+        pc.print_equation_from_list(self.w, "w", sympy=False)
+        pc.print_line()
 
     def mul_rs_and_simplify_nc(self, A, B):
         """ multiplies nc matrices A and B, right shifts s, converts
@@ -66,7 +66,7 @@ class Transformation(object):
         AB_nc_shifted = self.right_shift_all_in_matrix(AB_nc)
         AB_shifted_c = self.make_symbols_commutative(AB_nc_shifted)
         extr_result = list(AB_shifted_c)[0]
-        result = custom_simplify(extr_result)
+        result = al.custom_simplify(extr_result)
 
         return result
 
@@ -157,7 +157,7 @@ class Transformation(object):
     def calculate_Q_matrix(self):
         """ unimodular completion of P(d/dt) with Q = P1i * ... * P11 * P10
         """
-        print_line()
+        pc.print_line()
         print("Algorithmus am Ende\n")
 
         Q_relevant_matrices, Q_tilde_relevant_matrices = self._myStack.get_Q_relevant_matrices()
@@ -181,7 +181,7 @@ class Transformation(object):
         assert n==len(self._myStack.vec_x), "Dimensions of Q-Matrix do not fit."
 
         print "Q-matrix = "
-        print_nicely(Q)
+        pc.print_nicely(Q)
         print "\n"
 
         self.Q = Q
@@ -195,7 +195,7 @@ class Transformation(object):
         G_shifted = self.right_shift_all_in_matrix(G)
 
         print "G-matrix = "
-        print_nicely(G_shifted)
+        pc.print_nicely(G_shifted)
 
         self.G = G_shifted
 
@@ -247,7 +247,7 @@ class Transformation(object):
             Gi = st.concat_cols(Gi, Z_nc)
 
         if False: #show_Gi_matrices:
-            print_matrix("G", i, "", Gi)
+            pc.print_matrix("G", i, "", Gi)
 
         # store
         iteration.Gi = Gi

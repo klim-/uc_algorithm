@@ -36,16 +36,15 @@ import sympy as sp
 import symb_tools as st
 import diffgeopy as ct
 
-
-from core.algebra import *
-from core.integrability import *
-from core.matrix_container import *
-from core.system_container import *
-from core.transformations import *
-from util.print_candy import *
+import core.algebra as al
+import core.matrix_container as mc
+import core.system_container as sc
+import core.integrability as ic
+import core.transformations as tr
+import util.print_candy as pc
 
 try:
-    # import example
+    # import example passed by command line argument
     example = importlib.import_module(sys.argv[1])
 except ImportError:
     raise ImportError('The argument ' + str(sys.argv[1]) + ' does not seem to point to a valid example.')
@@ -61,16 +60,16 @@ mode = "auto" # "manual" or "auto"
 # workaround to escape from the input
 auto = None
 
-myStack = SystemStack(diff_symbols)
+myStack = sc.SystemStack(diff_symbols)
 myStack.vec_x = example.vec_x
-print "x ="; print_nicely(myStack.vec_x)
-print "\n\n xdot ="; print_nicely(myStack.vec_xdot)
+print "x ="; pc.print_nicely(myStack.vec_x)
+print "\n\n xdot ="; pc.print_nicely(myStack.vec_xdot)
 
 def end_condition(Bi):
     """ The algorithm ends if Bi has full row rank.
     """
     n, p = Bi.shape
-    return True if (n == srank(Bi)) else False
+    return True if (n == al.srank(Bi)) else False
 
 def outlier(Bi):
     """ sonderfall 4.7
@@ -78,19 +77,19 @@ def outlier(Bi):
         keinen vollen spaltenrang hat
     """
     n, p = Bi.shape
-    return True if (srank(Bi) < p) else False
+    return True if (al.srank(Bi) < p) else False
 
 def roc_hint(matrix_string, i,  matrix):
     error_string = "There must have been a mistake. Try again.\n"
-    print_matrix(matrix_string, i, "", matrix)
+    pc.print_matrix(matrix_string, i, "", matrix)
     while True:
         try:
             roc = eval(raw_input("Please enter " + str(matrix_string) + str(i) + "_roc or \"auto\":\n"))
             if roc==auto:
-                roc = right_ortho_complement(matrix)
+                roc = al.right_ortho_complement(matrix)
             try:
-                if is_zero_matrix(matrix*roc):
-                    print_matrix(matrix_string, i, "_roc", roc)
+                if al.is_zero_matrix(matrix*roc):
+                    pc.print_matrix(matrix_string, i, "_roc", roc)
                     return roc
                 else:
                     print error_string
@@ -102,15 +101,15 @@ def roc_hint(matrix_string, i,  matrix):
 
 def loc_hint(matrix_string, i,  matrix):
     error_string = "There must have been a mistake. Try again.\n"
-    print_matrix(matrix_string, i, "", matrix)
+    pc.print_matrix(matrix_string, i, "", matrix)
     while True:
         try:
             loc = eval(raw_input("Please enter " + str(matrix_string) + str(i) + "_loc or \"auto\":\n"))
             if loc==auto:
-                loc = left_ortho_complement(matrix)
+                loc = al.left_ortho_complement(matrix)
             try:
-                if is_zero_matrix(loc*matrix):
-                    print_matrix(matrix_string, i, "_loc", loc)
+                if al.is_zero_matrix(loc*matrix):
+                    pc.print_matrix(matrix_string, i, "_loc", loc)
                     return loc
                 else:
                     print error_string
@@ -129,10 +128,10 @@ def rpinv_hint(matrix_string, i,  matrix):
         try:
             rpinv = eval(raw_input("Please enter " + str(matrix_string) + str(i) + "_rpinv or \"auto\":\n"))
             if rpinv==auto:
-                rpinv = right_pseudo_inverse(matrix)
+                rpinv = al.right_pseudo_inverse(matrix)
             try:
-                if is_unit_matrix(matrix*rpinv):
-                    print_matrix(matrix_string, i, "_rpinv", rpinv)
+                if al.is_unit_matrix(matrix*rpinv):
+                    pc.print_matrix(matrix_string, i, "_rpinv", rpinv)
                     return rpinv
                 else:
                     print error_string
@@ -151,10 +150,10 @@ def lpinv_hint(matrix_string, i,  matrix):
         try:
             lpinv = eval(raw_input("Please enter " + str(matrix_string) + str(i) + "_lpinv or \"auto\":\n"))
             if lpinv==auto:
-                lpinv = left_pseudo_inverse(matrix)
+                lpinv = al.left_pseudo_inverse(matrix)
             try:
-                if is_unit_matrix(lpinv*matrix):
-                    print_matrix(matrix_string, i, "_lpinv", lpinv)
+                if al.is_unit_matrix(lpinv*matrix):
+                    pc.print_matrix(matrix_string, i, "_lpinv", lpinv)
                     return lpinv
                 else:
                     print error_string
@@ -168,18 +167,17 @@ def reduction(iter_stack):
     P1i = iter_stack.P1
     P0i = iter_stack.P0
     
-    P1i_roc = roc_hint("P1", iter_stack.i, P1i) if mode=="manual" else right_ortho_complement(P1i)
-    P1i_rpinv = rpinv_hint("P1", iter_stack.i, P1i) if mode=="manual" else right_pseudo_inverse(P1i)
+    P1i_roc = roc_hint("P1", iter_stack.i, P1i) if mode=="manual" else al.right_ortho_complement(P1i)
+    P1i_rpinv = rpinv_hint("P1", iter_stack.i, P1i) if mode=="manual" else al.right_pseudo_inverse(P1i)
 
 
     P1i_dot = st.perform_time_derivative(P1i, myStack.diffvec_x)
 
-    Ai = custom_simplify( (P0i - P1i_dot)*P1i_rpinv )
-    Bi = custom_simplify( (P0i - P1i_dot)*P1i_roc )
+    Ai = al.custom_simplify( (P0i - P1i_dot)*P1i_rpinv )
+    Bi = al.custom_simplify( (P0i - P1i_dot)*P1i_roc )
 
-    # TODO: this is not very elegant!
     try:
-        Bi_lpinv = left_pseudo_inverse(Bi)
+        Bi_lpinv = al.left_pseudo_inverse(Bi)
     except:
         Bi_lpinv = None
 
@@ -188,35 +186,35 @@ def reduction(iter_stack):
 
     return Bi
 
-def fourseven(iter_stack):#, Ai, Bi, P1i_roc, P1i_rpinv):
+def fourseven(iter_stack):
     # load matrices
     Ai = iter_stack.A
     Bi = iter_stack.B
     P1i_roc = iter_stack.P1_roc
     P1i_rpinv = iter_stack.P1_rpinv
     
-    K2 = roc_hint("B", iter_stack.i, Bi) if mode=="manual" else right_ortho_complement(Bi)
+    K2 = roc_hint("B", iter_stack.i, Bi) if mode=="manual" else al.right_ortho_complement(Bi)
 
 
-    if has_full_row_rank(Bi):
-        K1 = rpinv_hint("B", iter_stack.i, Bi) if mode=="manual" else right_pseudo_inverse(Bi)
+    if al.has_full_row_rank(Bi):
+        K1 = rpinv_hint("B", iter_stack.i, Bi) if mode=="manual" else al.right_pseudo_inverse(Bi)
     else:
-        K1 = roc_hint("K2.T", iter_stack.i, K2.T) if mode=="manual" else right_ortho_complement(K2.T)
+        K1 = roc_hint("K2.T", iter_stack.i, K2.T) if mode=="manual" else al.right_ortho_complement(K2.T)
 
     K = st.concat_cols(K1, K2)
 
-    assert is_regular_matrix(K), "K is not a regular matrix."
+    assert al.is_regular_matrix(K), "K is not a regular matrix."
 
-    Bi_tilde = custom_simplify(Bi*K1) # unit matrix
-    Bi_tilde_lpinv = left_pseudo_inverse(Bi_tilde)
+    Bi_tilde = al.custom_simplify(Bi*K1) # unit matrix
+    Bi_tilde_lpinv = al.left_pseudo_inverse(Bi_tilde)
 
-    P1i_tilde_roc = custom_simplify( P1i_roc*K1 )
+    P1i_tilde_roc = al.custom_simplify( P1i_roc*K1 )
 
-    Zi = custom_simplify( P1i_roc*K2 )
+    Zi = al.custom_simplify( P1i_roc*K2 )
 
-    Zi_lpinv = Zi_left_pinv_with_restrictions(P1i_rpinv, P1i_tilde_roc, Zi)
+    Zi_lpinv = al.Zi_left_pinv_with_restrictions(P1i_rpinv, P1i_tilde_roc, Zi)
 
-    assert is_unit_matrix( Zi_lpinv*Zi ), "Zi_lpinv seems to be wrong."
+    assert al.is_unit_matrix( Zi_lpinv*Zi ), "Zi_lpinv seems to be wrong."
 
     # store
     iter_stack.store_outlier_matrices( Zi, Zi_lpinv, Bi_tilde, Bi_tilde_lpinv, P1i_tilde_roc )
@@ -228,7 +226,7 @@ def elimination(iter_stack):
     Ai = iter_stack.A
     Bi = iter_stack.B
     
-    Bi_loc = loc_hint("B", iter_stack.i, Bi) if mode=="manual" else left_ortho_complement(Bi)
+    Bi_loc = loc_hint("B", iter_stack.i, Bi) if mode=="manual" else al.left_ortho_complement(Bi)
         
     # store
     iter_stack.store_elimination_matrices(Bi_loc)
@@ -243,15 +241,15 @@ def tangent_system():
     try:
         P1i # in case the system is given by the matrices P1i and P0i
     except NameError:
-        print "\n\n0 = F(x,xdot) ="; print_nicely(example.F_eq)
+        print "\n\n0 = F(x,xdot) ="; pc.print_nicely(example.F_eq)
 
         P1i = sp.Matrix([])
         P0i = sp.Matrix([])
         for i in xrange(len(myStack.vec_xdot)):
-            vector1 = custom_simplify( example.F_eq.diff(myStack.vec_xdot[i]) )
+            vector1 = al.custom_simplify( example.F_eq.diff(myStack.vec_xdot[i]) )
             P1i = st.concat_cols(P1i, vector1)
 
-            vector0 = custom_simplify( example.F_eq.diff(myStack.vec_x[i]) )
+            vector0 = al.custom_simplify( example.F_eq.diff(myStack.vec_x[i]) )
             P0i = st.concat_cols(P0i, vector0)
     print "\n\n"
     return P1i, P0i
@@ -270,19 +268,17 @@ def main():
 
     while 1:
         # new iteration_stack
-        myIteration = IterationStack(i, P1i, P0i)
+        myIteration = mc.IterationStack(i, P1i, P0i)
 
-        # kann nur am anfang passieren:
-        assert has_full_row_rank(P1i), "P10 does not have full row rank. There \
+        assert al.has_full_row_rank(P1i), "P10 does not have full row rank. There \
                                         must be algebraic equations."
 
-        # 1. reduktionsschritt
         Bi = reduction(myIteration)
 
-        assert not is_zero_matrix(Bi), "System ist not flat!"
+        assert not al.is_zero_matrix(Bi), "System ist not flat!"
 
         if outlier(Bi):
-            # sonderfall 4.7
+            # special case
            Bi = fourseven(myIteration)
 
         if end_condition(Bi):
@@ -293,10 +289,9 @@ def main():
             myStack.add_iteration(myIteration)
             break
 
-        # 2. eliminationsschritt
         P1i, P0i = elimination(myIteration)
 
-        if mode=="manual": print_line()
+        if mode=="manual": pc.print_line()
 
         # add to system stack + print iteration
         myStack.add_iteration(myIteration)
@@ -304,14 +299,15 @@ def main():
         i += 1
 
     # create transformation and calculate Q and G(d/dt)
-    myStack.transformation = Transformation(myStack)
+    myStack.transformation = tr.Transformation(myStack)
     # check for integrability
-    myIntegrabilityCheck = IntegrabilityCheck(myStack)
+    myIntegrabilityCheck = ic.IntegrabilityCheck(myStack)
 
-    # for testing
+    # for testing purpose
     global P, Q, Q_, G, T, w, I
     T = myStack.transformation
     I = myIntegrabilityCheck
+
     P = myStack.transformation.P
     Q = myStack.transformation.Q
     # non commutative version:
@@ -319,7 +315,7 @@ def main():
     G = myStack.transformation.G
     w = T.w
 
-    print_line()
+    pc.print_line()
 
 if __name__ == '__main__':
     main()

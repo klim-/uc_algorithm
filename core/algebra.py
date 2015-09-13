@@ -42,7 +42,7 @@ custom_simplify = get_timed_simplify(20)
 
 st.nullspace_simplify_func = custom_simplify
 
-# Primzahlen in subs_random_numbers nutzen?
+# use prime number in subs_random_numbers()?
 srn_prime = True
     
 def srank(matrix):
@@ -54,18 +54,7 @@ def srank(matrix):
     if debug==True: print "end srn"
     r = matrix_rand.rank()
 
-    
     return r
-    #if r == m:
-        #return r
-    #else:
-        #r_symb = matrix.rank()
-        #if r == r_symb:
-            #return r
-        #else:
-            ## TODO: was hier? bisher noch nicht aufgetreten. tests?
-            #raise NotImplementedError
-            #pass
 
 def left_ortho_complement(matrix):
     

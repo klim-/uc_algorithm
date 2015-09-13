@@ -16,7 +16,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from util.print_candy import *
+import util.print_candy as pc
 
 from IPython import embed as IPS
 
@@ -78,45 +78,45 @@ class IterationStack(object):
     def print_stack(self):
         """ prints all matrices for this iteration
         """
-        print_next_iteration(self.i)
+        pc.print_next_iteration(self.i)
 
-        print_matrix("P1", self.i, "", self.P1)
-        print_matrix("P0", self.i, "", self.P0)
+        pc.print_matrix("P1", self.i, "", self.P1)
+        pc.print_matrix("P0", self.i, "", self.P0)
         
-        print_matrix("P1", self.i, "_roc", self.P1_roc)
-        print_matrix("P1", self.i, "_rpinv", self.P1_rpinv)
-        print_matrix("P1", self.i, "_dot", self.P1_dot)
+        pc.print_matrix("P1", self.i, "_roc", self.P1_roc)
+        pc.print_matrix("P1", self.i, "_rpinv", self.P1_rpinv)
+        pc.print_matrix("P1", self.i, "_dot", self.P1_dot)
 
-        print_matrix("A", self.i, "", self.A)
-        print_matrix("B", self.i, "", self.B)
-        print_matrix("B", self.i, "_loc", self.B_loc)
-        print_matrix("B", self.i, "_lpinv", self.B_lpinv)
+        pc.print_matrix("A", self.i, "", self.A)
+        pc.print_matrix("B", self.i, "", self.B)
+        pc.print_matrix("B", self.i, "_loc", self.B_loc)
+        pc.print_matrix("B", self.i, "_lpinv", self.B_lpinv)
         
         if self.is_outlier:
-            print_outlier_line()
+            pc.print_outlier_line()
 
-            print_matrix("B", self.i, "_tilde", self.B_tilde)
-            print_matrix("B", self.i, "_tilde_lpinv", self.B_tilde_lpinv)
-            print_matrix("P1", self.i, "_tilde_roc", self.P1_tilde_roc)
-            print_matrix("Z", self.i, "", self.Z)
-            print_matrix("Z", self.i, "_lpinv", self.Z_lpinv)
+            pc.print_matrix("B", self.i, "_tilde", self.B_tilde)
+            pc.print_matrix("B", self.i, "_tilde_lpinv", self.B_tilde_lpinv)
+            pc.print_matrix("P1", self.i, "_tilde_roc", self.P1_tilde_roc)
+            pc.print_matrix("Z", self.i, "", self.Z)
+            pc.print_matrix("Z", self.i, "_lpinv", self.Z_lpinv)
 
     def print_hint_stack(self):
         """ prints remaining matrices in case of manual mode
         """
-        print_next_iteration(self.i)
-        print_matrix("P1", self.i, "_dot", self.P1_dot)
+        pc.print_next_iteration(self.i)
+        pc.print_matrix("P1", self.i, "_dot", self.P1_dot)
 
-        print_matrix("A", self.i, "", self.A)
-        print_matrix("B", self.i, "", self.B)
-        print_matrix("B", self.i, "_loc", self.B_loc)
-        print_matrix("B", self.i, "_lpinv", self.B_lpinv)
+        pc.print_matrix("A", self.i, "", self.A)
+        pc.print_matrix("B", self.i, "", self.B)
+        pc.print_matrix("B", self.i, "_loc", self.B_loc)
+        pc.print_matrix("B", self.i, "_lpinv", self.B_lpinv)
         
         if self.is_outlier:
-            print_outlier_line()
+            pc.print_outlier_line()
 
-            print_matrix("B", self.i, "_tilde", self.B_tilde)
-            print_matrix("B", self.i, "_tilde_lpinv", self.B_tilde_lpinv)
-            print_matrix("P1", self.i, "_tilde_roc", self.P1_tilde_roc)
-            print_matrix("Z", self.i, "", self.Z)
-            print_matrix("Z", self.i, "_lpinv", self.Z_lpinv)
+            pc.print_matrix("B", self.i, "_tilde", self.B_tilde)
+            pc.print_matrix("B", self.i, "_tilde_lpinv", self.B_tilde_lpinv)
+            pc.print_matrix("P1", self.i, "_tilde_roc", self.P1_tilde_roc)
+            pc.print_matrix("Z", self.i, "", self.Z)
+            pc.print_matrix("Z", self.i, "_lpinv", self.Z_lpinv)

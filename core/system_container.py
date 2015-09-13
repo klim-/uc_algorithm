@@ -21,8 +21,7 @@ import sympy as sp
 import symb_tools as st
 import diffgeopy as ct
 
-from core.matrix_container import *
-from util.print_candy import *
+import core.matrix_container as mc
 
 from IPython import embed as IPS
 
@@ -64,7 +63,7 @@ class SystemStack(object):
         self.diffvec_x = st.concat_rows(self.vec_x, self.vec_xdot, self.diff_symbols)
 
     def add_iteration(self, iter_stack):
-        assert isinstance(iter_stack, IterationStack)
+        assert isinstance(iter_stack, mc.IterationStack)
         self.iteration_data.append(iter_stack)
         iter_stack.print_stack()
 
@@ -104,7 +103,7 @@ class SystemStack(object):
             Q_relevant_matrices.append(P1i)
 
         Q_tilde_relevant_matrices = []
-        #~ number_of_outliers, outliers = self.get_outliers()
+
         outliers = self.get_outliers()
 
         if outliers.count(1) == 1:
