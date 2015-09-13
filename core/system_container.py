@@ -87,8 +87,8 @@ class SystemStack(object):
         return outliers
         #~ return counter, outliers
 
-    def outlier_in_between(outliers):
-        if (outlier.count(1)>=0) and (outlier.index(1)<(len(outlier))):
+    def outlier_in_between(self, outlier):
+        if (outlier.count(1)>0) and (outlier.index(1)<(len(outlier))):
             return True
         else:
             return False
@@ -115,10 +115,7 @@ class SystemStack(object):
                 else:
                     P1i = self.iteration_data[i].P1
                     Q_tilde_relevant_matrices.append(P1i)
-        elif outlier_in_between(outliers):
-            # TODO: what if there is more than one outlier?
-            #       there should be 2*(outliers.count(1)) row vectors
-            #       in Q_tilde then
+        elif self.outlier_in_between(outliers):
             raise NotImplementedError
 
         return Q_relevant_matrices, Q_tilde_relevant_matrices
