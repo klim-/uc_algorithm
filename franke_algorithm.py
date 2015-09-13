@@ -18,10 +18,9 @@
 
 """
 Implementation of an algorithm for determining differential flat ouputs
-for nonlinear dynamic systems (see Franke, Matthias: 'Über die
-Konstruktion flacher Ausgänge für nichtlineare Systeme und zur
-Polzuweisung durch statische Ausgangsrückführungen', Publisher: Logos
-Verlag Berlin, 2014).
+for nonlinear dynamic systems (see Franke/Röbenack: On the Computation
+of Flat Outputs for Nonlinear Control Systems. European Control
+Conference [ECC], 2013).
 """
 
 # enable true divison
@@ -45,7 +44,8 @@ import util.print_candy as pc
 
 try:
     # import example passed by command line argument
-    example = importlib.import_module(sys.argv[1])
+    path = sys.argv[1].replace("/",".").replace(".py","")
+    example = importlib.import_module(path)
 except ImportError:
     raise ImportError('The argument ' + str(sys.argv[1]) + ' does not seem to point to a valid example.')
 
