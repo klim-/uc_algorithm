@@ -11,4 +11,5 @@ from ex.franke_519 import * # **** einradfahrer (kompliziert!!)
 #from ex.martin_gegenbeispiel import *
 
 
-from ex.fahrzeug_odeometrie_beide_raeder import *
+#from ex.fahrzeug_odeometrie_beide_raeder import *
+from ex.mechanik_2pendel import *
