@@ -29,18 +29,7 @@ st.nullspace_simplify_func = custom_simplify
 # Primzahlen in subs_random_numbers nutzen?
 srn_prime = True
 
-import pickle
-pcl_matrix_list = []
-def rank_test_matrix_pickle(M):
-    pcl_matrix_list.append(M)
-    
-    with open('matrices.pcl', 'w') as pfile:
-        pickle.dump(pcl_matrix_list, pfile)
-    
-    print "pickle:", M.shape
-    
 
-    
 def srank(matrix):
     """ Computes the rank for symbolic matrices.
     """
@@ -50,8 +39,6 @@ def srank(matrix):
     print "end srn"
     r = matrix_rand.rank()
 
-    
-    rank_test_matrix_pickle(matrix)
     
     return r
     #if r == m:
