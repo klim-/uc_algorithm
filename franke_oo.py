@@ -277,21 +277,54 @@ def main():
 
     # create transformation and calculate Q and G(d/dt)
     myStack.transformation = Transformation(myStack)
-    # check for integrability
-    myIntegrabilityCheck = IntegrabilityCheck(myStack)
+    
+    import pickle
+    
+    # abuse the Q-Matrix object to store some additional data
+    # the subs_stuples data structure and other attributes
+    # come from the example module
+    myStack.transformation.Q.subs_tuples = subs_tuples
+    
+    myStack.transformation.Q.F_eq_orig = F_eq_orig
+    myStack.transformation.Q.diff_symbols = diff_symbols
+    myStack.transformation.Q.data = data
+    
+    if not sys_name:
+        local_sys_name = ""
+    else:
+        local_sys_name = sys_name
+    fname = "Q_matrix_%s.pcl" % local_sys_name
+    
+    with open(fname, 'w') as pfile:
+        pickle.dump(myStack.transformation.Q, pfile)
+    
+    print "Q-Matrix saved to ", fname
+    
+    if myStack.transformation.G != None:
+        fname = "G_matrix_%s.pcl" % local_sys_name
+        with open(fname, 'w') as pfile:
+            pickle.dump(myStack.transformation.G, pfile)
+    
+    print "G-Matrix saved to ", fname
+    
+    
+    if len(diff_symbols) == 0:
+        
+        # check for integrability
+        myIntegrabilityCheck = IntegrabilityCheck(myStack)
 
-    # for testing
-    global P, Q, Q_, G, T, w, I
-    T = myStack.transformation
-    I = myIntegrabilityCheck
-    P = myStack.transformation.P
-    Q = myStack.transformation.Q
-    # non commutative version:
-    Q_ = T.make_symbols_non_commutative(Q)
-    G = myStack.transformation.G
-    w = T.w
+        # for testing
+        global P, Q, Q_, G, T, w, I
+        T = myStack.transformation
+        I = myIntegrabilityCheck
+        P = myStack.transformation.P
+        Q = myStack.transformation.Q
+        # non commutative version:
+        Q_ = T.make_symbols_non_commutative(Q)
+        G = myStack.transformation.G
+        w = T.w
 
-    print_line()
+        print_line()
 
 if __name__ == '__main__':
     main()

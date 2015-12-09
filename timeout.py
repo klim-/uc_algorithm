@@ -59,8 +59,7 @@ def get_timed_simplify(t):
             result = timeout_exception_simplify(expr, **kwargs)
         except TimeoutError:
             result = expr
-            print "simplification stopped for expr.count_ops:"
-            print st.count_ops(expr)
+            print "simplification stopped for big expr."
         return result
         
     return wrapper

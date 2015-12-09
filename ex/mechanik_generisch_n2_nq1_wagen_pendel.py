@@ -2,10 +2,10 @@
 import sympy as sp
 import rst_symbtools.symb_tools as st
 
-Ndf = 3  # Anzahl der Freiheitsgrade
-Nin = 2  # Anzahl der Eingänge
+n = 2  # Anzahl der Freiheitsgrade
+nq = 1  # Anzahl der Eingänge
 
-Neq = Ndf - Nin  # Anzahl der mechanischen Gleichungen (ohne definitorische)
+Neq = n - nq  # Anzahl der mechanischen Gleichungen (ohne definitorische)
 
 
 eq_coeffsA = []
@@ -20,7 +20,7 @@ for i in xrange(Neq):
     coeffsC = []
     coeffs = []
     # iterieren über die einzelnen Freiheitsgrade
-    for j in xrange(Ndf):
+    for j in xrange(n):
         # drei Ableitungsordnungen
         A = sp.Symbol("A%i_%i" % (i + 1, j + 1))
         B = sp.Symbol("B%i_%i" % (i + 1, j + 1))
@@ -45,10 +45,10 @@ diff_symbols = sp.Matrix(all_coeffs)
 #x1, x2, x3, x4, x5, x6 = sp.symbols("x1, x2, x3, x4, x5, x6")
 
 
-vec_x = sp.Matrix( sp.symbols("x1:%i" % (Ndf*2 + 1)) )
+vec_x = sp.Matrix( sp.symbols("x1:%i" % (n*2 + 1)) )
 
-theta = vec_x[:Ndf, :]
-mu = vec_x[Ndf:, :]
+theta = vec_x[:n, :]
+mu = vec_x[n:, :]
 
 vec_xdot = st.perform_time_derivative(vec_x, vec_x)
 thetadot = st.perform_time_derivative(theta, vec_x)
@@ -58,15 +58,25 @@ mudot = st.perform_time_derivative(mu, vec_x)
 # definitorische Gleichungen
 eq_defin = thetadot - mu
 
-AA = sp.Matrix(eq_coeffsA)
-BB = sp.Matrix(eq_coeffsB)
-CC = sp.Matrix(eq_coeffsC)
+
+# Container um zusätzliche Information über das Beispiel zu speichern
+data = st.Container()
+
+data.P0 = AA = sp.Matrix(eq_coeffsA) # P0
+data.P1 = BB = sp.Matrix(eq_coeffsB) # P1
+data.P2 = CC = sp.Matrix(eq_coeffsC) # P2
 
 
 #eq_mech = AA*theta + BB*mu + CC*mudot
+from ipHelp import IPS
+IPS()
 eq_mech = AA*theta + BB*thetadot + CC*mudot
 
-F_eq = st.row_stack(eq_defin, eq_mech)
+F_eq_orig = F_eq = st.row_stack(eq_defin, eq_mech)
+
+sys_name = "mechanik_generisch_n2_nq1_wagen_pendel"
+
+
 
 #F_eq = sp.Matrix([
         #[ xdot1 - x4 ],

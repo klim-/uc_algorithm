@@ -61,11 +61,17 @@ eq_defin = thetadot - mu
 st.make_global(all_coeffs, 1)
 
 
-#from IPython import embed as IPS
-#IPS()
 
-AA = sp.Matrix([[A1_1, 0, 0, 0], [0, A2_1, 0, 0]])
+
+
+# Weil die allgemeine Struktur so kompliziert ist, dass der Algorithmus zu lange
+# braucht, werden nur die Terme (mit Platzhaltern) berücksichtigt,
+# die tatsächlich auftreten
+AA = sp.Matrix([[A1_1, 0, 0, 0], [0, A2_2, 0, 0]])
 BB = sp.zeros(Neq, Ndf)
+# Reibung:
+BB[0,0] = B1_1
+BB[1,1] = B2_2
 CC = sp.Matrix([[C1_1, 0, C1_3, C1_4], [0, C2_2, C2_3, C2_4]])
 
 
@@ -79,6 +85,10 @@ eq_mech = AA*theta + BB*thetadot + CC*mudot
 
 
 F_eq = st.row_stack(eq_defin, eq_mech)
+
+
+#from IPython import embed as IPS
+#IPS()
 
 #F_eq = sp.Matrix([
         #[ xdot1 - x4 ],

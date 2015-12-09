@@ -2,7 +2,7 @@
 import sympy as sp
 import rst_symbtools.symb_tools as st
 
-Ndf = 3  # Anzahl der Freiheitsgrade
+Ndf = 4  # Anzahl der Freiheitsgrade
 Nin = 2  # Anzahl der Eingänge
 
 Neq = Ndf - Nin  # Anzahl der mechanischen Gleichungen (ohne definitorische)
@@ -40,9 +40,6 @@ for i in xrange(Neq):
     all_coeffs.extend(coeffs)
         
 
-diff_symbols = sp.Matrix(all_coeffs)
-
-#x1, x2, x3, x4, x5, x6 = sp.symbols("x1, x2, x3, x4, x5, x6")
 
 
 vec_x = sp.Matrix( sp.symbols("x1:%i" % (Ndf*2 + 1)) )
@@ -58,19 +55,29 @@ mudot = st.perform_time_derivative(mu, vec_x)
 # definitorische Gleichungen
 eq_defin = thetadot - mu
 
-AA = sp.Matrix(eq_coeffsA)
-BB = sp.Matrix(eq_coeffsB)
-CC = sp.Matrix(eq_coeffsC)
+st.make_global(all_coeffs, 1)
+
+
+
+# Weil die allgemeine Struktur so kompliziert ist, dass der Algorithmus zu lange
+# braucht, werden nur die Terme (mit Platzhaltern) berücksichtigt,
+# die tatsächlich auftreten
+AA = sp.Matrix([[A1_1, 0, 0, 0], [0, A2_2, 0, 0]])
+BB = sp.zeros(Neq, Ndf)
+CC = sp.Matrix([[C1_1, 0, C1_3, C1_4], [0, C2_2, C2_3, 0]])
+
+
+# C1_1, C2_2 sind constant
+diff_symbols = sp.Matrix([A1_1, C1_3, C1_4])
 
 
 #eq_mech = AA*theta + BB*mu + CC*mudot
 eq_mech = AA*theta + BB*thetadot + CC*mudot
 
+
+
 F_eq = st.row_stack(eq_defin, eq_mech)
 
-#F_eq = sp.Matrix([
-        #[ xdot1 - x4 ],
-        #[ xdot2 - x5 ],
-        #[ xdot3 - x6 ],
-        #[ a2*xdot4 + b2*xdot5 + c2*xdot6 + b1*x5 + c1*x6 + b0*x2 + c0*x3 ]])
-        #~ [ a2*xdot4 + b2*xdot5 + c2*xdot6 + b1*x5 + c1*x6 + b0*x2 + c0*x3 + a0*x1 + a1*x4]])
+
+from IPython import embed as IPS
+IPS()
