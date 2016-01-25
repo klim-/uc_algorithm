@@ -42,5 +42,5 @@ data = None
 
 #from ex.system_generisch_4zust_2sg_v2 import *
 
-from ex.mechanik_generisch_n2_nq1_wagen_pendel import *
+from ex.mechanik_ph_wagen_pendel import *
 

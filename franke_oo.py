@@ -295,8 +295,9 @@ def main():
         local_sys_name = sys_name
     fname = "Q_matrix_%s.pcl" % local_sys_name
     
-    with open(fname, 'w') as pfile:
-        pickle.dump(myStack.transformation.Q, pfile)
+    st.pickle_full_dump(myStack.transformation.Q, fname)
+    #with open(fname, 'w') as pfile:
+        #pickle.dump(myStack.transformation.Q, pfile)
     
     print "Q-Matrix saved to ", fname
     
@@ -305,7 +306,7 @@ def main():
         with open(fname, 'w') as pfile:
             pickle.dump(myStack.transformation.G, pfile)
     
-    print "G-Matrix saved to ", fname
+        print "G-Matrix saved to ", fname
     
     
     if len(diff_symbols) == 0:
