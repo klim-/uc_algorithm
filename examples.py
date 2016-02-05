@@ -42,5 +42,9 @@ data = None
 
 #from ex.system_generisch_4zust_2sg_v2 import *
 
-from ex.mechanik_ph_wagen_pendel import *
+#from ex.mechanik_ph_wagen_pendel import *
+#from ex.mechanik_ph_planar_versch_pendel_elast_masse import *
+#from ex.mechanik_ph_RTtt import *
+#from ex.mechanik_ph_RTtt_seriell import *
+from ex.mechanik_ph_RTt_mit_Reibung import *
 
