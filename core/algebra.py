@@ -160,6 +160,37 @@ def nr_of_ops(vector):
         ops += vector[i].count_ops()
     return ops
 
+def regular_completion(matrix):
+    m,n = matrix.shape
+    r = matrix.rank()
+    
+    #~ IPS()
+    assert m!=n, "There is no regular completion of a square matrix."
+
+    if m<n:
+        assert r==m, "Matrix does not have full row rank."
+        A, B, V_pi = reshape_matrix_columns(matrix)
+        zeros = sp.zeros(n-m,m)
+        ones = sp.eye(n-m)
+        S = st.col_stack(zeros,ones)
+        completion = S*V_pi.T
+        
+        regular_matrix = st.row_stack(matrix,completion)
+        assert st.rnd_number_rank(regular_matrix)==n, "Regular completion seems to be wrong."
+
+    elif n<m:
+        assert r==n, "Matrix does not have full column rank."
+        A, B, V_pi = reshape_matrix_columns(matrix.T)
+        zeros = sp.zeros(m-n,n)
+        ones = sp.eye(m-n)
+        S = st.col_stack(zeros,ones)
+        completion = V_pi*S.T
+        
+        regular_matrix = st.col_stack(completion,matrix)
+        assert st.rnd_number_rank(regular_matrix)==m, "Regular completion seems to be wrong."
+
+    return completion
+
 def reshape_matrix_columns(P):
     m0, n0 = P.shape
 
@@ -181,9 +212,6 @@ def reshape_matrix_columns(P):
     colvecs_sorted = sorted( cols_sorted_by_atoms, key=lambda x: count_zero_entries(x), reverse=True)
 
     # pick m suitable column vectors and add to new matrix A: ----------
-    if len(colvecs_sorted) == 0:
-        from ipHelp import IPS
-        IPS()
     A = colvecs_sorted[0]
     for j in xrange(len(colvecs_sorted)-1):
         column = colvecs_sorted[j+1]
@@ -193,7 +221,6 @@ def reshape_matrix_columns(P):
         if srank(A)==m1:
             break
 
-    # ck: sollte eigentlich gelten, oder?
     assert A.is_square
             
     # calculate transformation matrix R: -------------------------------

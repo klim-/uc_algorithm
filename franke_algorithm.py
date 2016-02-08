@@ -169,7 +169,6 @@ def reduction(iter_stack):
     P1i_roc = roc_hint("P1", iter_stack.i, P1i) if mode=="manual" else al.right_ortho_complement(P1i)
     P1i_rpinv = rpinv_hint("P1", iter_stack.i, P1i) if mode=="manual" else al.right_pseudo_inverse(P1i)
 
-
     P1i_dot = st.perform_time_derivative(P1i, myStack.diffvec_x)
 
     Ai = al.custom_simplify( (P0i - P1i_dot)*P1i_rpinv )
@@ -194,11 +193,7 @@ def fourseven(iter_stack):
     
     K2 = roc_hint("B", iter_stack.i, Bi) if mode=="manual" else al.right_ortho_complement(Bi)
 
-
-    if al.has_full_row_rank(Bi):
-        K1 = rpinv_hint("B", iter_stack.i, Bi) if mode=="manual" else al.right_pseudo_inverse(Bi)
-    else:
-        K1 = roc_hint("K2.T", iter_stack.i, K2.T) if mode=="manual" else al.right_ortho_complement(K2.T)
+    K1 = al.regular_completion(K2)
 
     K = st.concat_cols(K1, K2)
 
@@ -242,14 +237,9 @@ def tangent_system():
     except NameError:
         print "\n\n0 = F(x,xdot) ="; pc.print_nicely(example.F_eq)
 
-        P1i = sp.Matrix([])
-        P0i = sp.Matrix([])
-        for i in xrange(len(myStack.vec_xdot)):
-            vector1 = al.custom_simplify( example.F_eq.diff(myStack.vec_xdot[i]) )
-            P1i = st.concat_cols(P1i, vector1)
+        P1i = example.F_eq.jacobian(myStack.vec_xdot)
+        P0i = example.F_eq.jacobian(myStack.vec_x)
 
-            vector0 = al.custom_simplify( example.F_eq.diff(myStack.vec_x[i]) )
-            P0i = st.concat_cols(P0i, vector0)
     print "\n\n"
     return P1i, P0i
     
