@@ -44,8 +44,9 @@ import util.print_candy as pc
 
 try:
     # import example passed by command line argument
-    path = sys.argv[1].replace("/",".").replace(".py","")
-    example = importlib.import_module(path)
+    path = sys.argv[1]
+    pseudo_path = path.replace("/",".").replace(".py","")
+    example = importlib.import_module(pseudo_path)
 except ImportError:
     raise ImportError('The argument ' + str(sys.argv[1]) + ' does not seem to point to a valid example.')
 
@@ -289,6 +290,26 @@ def main():
 
     # create transformation and calculate Q and G(d/dt)
     myStack.transformation = tr.Transformation(myStack)
+
+
+    # store results of the algorithm in pickled data container
+    if hasattr(example, 'data'):
+        data = example.data
+    else:
+        # from file containing the example
+        data = st.Container()
+        data.F_eq = example.F_eq
+        data.vec_x = example.vec_x
+        data.vec_xdot = example.vec_xdot
+
+    # add data to be stored here:
+    data.P = myStack.transformation.P
+    data.Q = myStack.transformation.Q
+
+    fname = path.replace(".py",".pcl")
+    st.pickle_full_dump(data, fname)
+
+
     # check for integrability
     myIntegrabilityCheck = ic.IntegrabilityCheck(myStack)
 
@@ -304,6 +325,7 @@ def main():
     G = myStack.transformation.G
     w = T.w
 
+    print "Data saved to ", fname, "\n"
     pc.print_line()
 
 if __name__ == '__main__':
