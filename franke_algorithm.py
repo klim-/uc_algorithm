@@ -42,6 +42,7 @@ import core.integrability as ic
 import core.transformations as tr
 import util.print_candy as pc
 
+
 try:
     # import example passed by command line argument
     path = sys.argv[1]
@@ -58,12 +59,15 @@ else:
 
 mode = "auto" # "manual" or "auto"
 
+calc_G = False # calculate G matrix
+
 # raw_input() does not seem to handle empty strings, so this is a
 # workaround to escape from the input
 auto = None
 
 myStack = sc.SystemStack(diff_symbols)
 myStack.vec_x = example.vec_x
+myStack.calc_G = calc_G
 print "x ="; pc.print_nicely(myStack.vec_x)
 print "\n\n xdot ="; pc.print_nicely(myStack.vec_xdot)
 
@@ -175,9 +179,9 @@ def reduction(iter_stack):
     Ai = al.custom_simplify( (P0i - P1i_dot)*P1i_rpinv )
     Bi = al.custom_simplify( (P0i - P1i_dot)*P1i_roc )
 
-    try:
+    if myStack.calc_G:
         Bi_lpinv = al.left_pseudo_inverse(Bi)
-    except:
+    else:
         Bi_lpinv = None
 
     # store
@@ -201,7 +205,11 @@ def fourseven(iter_stack):
     assert al.is_regular_matrix(K), "K is not a regular matrix."
 
     Bi_tilde = al.custom_simplify(Bi*K1) # unit matrix
-    Bi_tilde_lpinv = al.left_pseudo_inverse(Bi_tilde)
+
+    if myStack.calc_G:
+        Bi_tilde_lpinv = al.left_pseudo_inverse(Bi_tilde)
+    else:
+        Bi_tilde_lpinv = None
 
     P1i_tilde_roc = al.custom_simplify( P1i_roc*K1 )
 

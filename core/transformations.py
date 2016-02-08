@@ -43,8 +43,8 @@ class Transformation(object):
 
         self.calculate_P_Matrix()
         self.calculate_Q_matrix()
-        var = raw_input("Type \"G\" to calculate G(d/dt)-matrix\n")
-        if var=="G": self.calculate_G_matrix()
+
+        if myStack.calc_G: self.calculate_G_matrix()
 
     @property
     def w(self):
