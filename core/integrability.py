@@ -17,7 +17,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import sympy as sp
-import diffgeopy as ct
+import pycartan as ct
 import symb_tools as st
 
 import util.print_candy as pc
@@ -30,7 +30,7 @@ class IntegrabilityCheck(object):
 
         self.generate_basis()
         self.assemble_dual_basis()
-        self.integrability_conditions()
+        #~ self.integrability_conditions()
 
     def generate_basis(self):
         # TODO: not the most elegant way?

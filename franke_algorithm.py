@@ -33,7 +33,6 @@ from IPython import embed as IPS
 import numpy as np
 import sympy as sp
 import symb_tools as st
-import diffgeopy as ct # PyCartan
 
 import core.algebra as al
 import core.matrix_container as mc
@@ -317,21 +316,14 @@ def main():
     fname = path.replace(".py",".pcl")
     st.pickle_full_dump(data, fname)
 
-
-    # check for integrability
-    myIntegrabilityCheck = ic.IntegrabilityCheck(myStack)
-
-    # for testing purpose
-    global P, Q, Q_, G, T, w, I
-    T = myStack.transformation
-    I = myIntegrabilityCheck
-
-    P = myStack.transformation.P
-    Q = myStack.transformation.Q
-    # non commutative version:
-    Q_ = T.make_symbols_non_commutative(Q)
-    G = myStack.transformation.G
-    w = T.w
+    # for testing
+    try:
+        import pycartan as ct
+        global w
+        myIntegrabilityCheck = ic.IntegrabilityCheck(myStack)
+        w = myStack.transformation.w
+    except Exception as exc:
+        print exc
 
     print "Data saved to ", fname, "\n"
     pc.print_line()
