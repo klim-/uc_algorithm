@@ -310,7 +310,8 @@ def main():
         data.vec_xdot = example.vec_xdot
 
     # add data to be stored here:
-    data.P = myStack.transformation.P
+    data.TS_P1 = myStack.transformation.P10
+    data.TS_P0 = myStack.transformation.P00
     data.Q = myStack.transformation.Q
 
     fname = path.replace(".py",".pcl")

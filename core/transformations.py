@@ -36,6 +36,8 @@ class Transformation(object):
     def __init__(self, myStack):
         self._myStack = myStack
 
+        self.P10 = self._myStack.get_iteration(0).P1
+        self.P00 = self._myStack.get_iteration(0).P0
         self.P = None # P[d/dt]=P0 + P1*(d/dt)
         self.Q = None # unimodular completion of P[d/dt]
         self._w = None # internal variable of corresponding 1form
