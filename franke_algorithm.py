@@ -74,13 +74,13 @@ def end_condition(Bi):
     """ The algorithm ends if Bi has full row rank.
     """
     n, p = Bi.shape
-    return True if (n == al.srank(Bi)) else False
+    return True if (n == st.rnd_number_rank(Bi)) else False
 
 def is_special_case(Bi):
     """ Checks for special case
     """
     n, p = Bi.shape
-    return True if (al.srank(Bi) < p) else False
+    return True if (st.rnd_number_rank(Bi) < p) else False
 
 def roc_hint(matrix_string, i,  matrix):
     error_string = "There must have been a mistake. Try again.\n"

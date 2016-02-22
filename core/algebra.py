@@ -44,17 +44,6 @@ st.nullspace_simplify_func = custom_simplify
 
 # use prime number in subs_random_numbers()?
 srn_prime = True
-    
-def srank(matrix):
-    """ Computes the rank for symbolic matrices.
-    """
-    m, n = matrix.shape
-    if debug==True: print "start srn"
-    matrix_rand = st.subs_random_numbers(matrix, prime=srn_prime)
-    if debug==True: print "end srn"
-    r = matrix_rand.rank()
-
-    return r
 
 def left_ortho_complement(matrix):
     
@@ -66,7 +55,7 @@ def left_ortho_complement(matrix):
     return v
 
 def has_left_ortho_complement(matrix):
-    r = srank(matrix)
+    r = st.rnd_number_rank(matrix)
     m, n = matrix.shape
     if(n>=m):
         return True if (r<m) else False
@@ -83,7 +72,7 @@ def right_ortho_complement(matrix):
         return alternative_right_ortho_complement(matrix)
 
 def has_right_ortho_complement(matrix):
-    r = srank(matrix)
+    r = st.rnd_number_rank(matrix)
     m, n = matrix.shape
     if(m>=n):
         return True if (r<n) else False
@@ -91,7 +80,7 @@ def has_right_ortho_complement(matrix):
 
 def left_pseudo_inverse(matrix):
     m, n = matrix.shape
-    r = srank(matrix)
+    r = st.rnd_number_rank(matrix)
     #assert r==n, "Matrix does not have full column rank!"
     assert not is_zero_matrix(matrix), "Matrix is zero matrix!"
 
@@ -126,9 +115,9 @@ def remove_zero_columns(matrix):
 def is_linearly_independent(matrix, column_vector):
     m, n = matrix.shape
 
-    rank1 = srank(matrix)
+    rank1 = st.rnd_number_rank(matrix)
     tmp = st.concat_cols(matrix, column_vector)
-    rank2 = srank(tmp)
+    rank2 = st.rnd_number_rank(tmp)
     
     assert rank2 >= rank1
         
@@ -218,7 +207,7 @@ def reshape_matrix_columns(P):
         if is_linearly_independent(A,column):
             A = st.concat_cols(A,column)
 
-        if srank(A)==m1:
+        if st.rnd_number_rank(A)==m1:
             break
 
     assert A.is_square
@@ -248,7 +237,7 @@ def reshape_matrix_columns(P):
             R = st.concat_cols(R,R_col)
 
     m3, n3 = A.shape
-    r2 = srank(A)
+    r2 = st.rnd_number_rank(A)
     assert m3==r2, "A problem occured in reshaping the matrix."
 
     # calculate B matrix: ----------------------------------------------
@@ -386,12 +375,12 @@ def is_square_matrix(matrix):
 def is_regular_matrix(matrix):
     assert is_square_matrix(matrix), "Matrix is not a square matrix."
     m, n = matrix.shape
-    r = srank(matrix)
+    r = st.rnd_number_rank(matrix)
     return True if (r == m) else False
 
 def has_full_row_rank(matrix):
     m, n = matrix.shape
-    r = srank(matrix)
+    r = st.rnd_number_rank(matrix)
     return True if (m==r) else False
 
 def check_row_compatibility(*args):
