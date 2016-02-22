@@ -173,7 +173,7 @@ def reduction(iter_stack):
     P1i_roc = roc_hint("P1", iter_stack.i, P1i) if mode=="manual" else al.right_ortho_complement(P1i)
     P1i_rpinv = rpinv_hint("P1", iter_stack.i, P1i) if mode=="manual" else al.right_pseudo_inverse(P1i)
 
-    P1i_dot = st.perform_time_derivative(P1i, myStack.diffvec_x)
+    P1i_dot = st.time_deriv(P1i, myStack.diffvec_x)
 
     Ai = al.custom_simplify( (P0i - P1i_dot)*P1i_rpinv )
     Bi = al.custom_simplify( (P0i - P1i_dot)*P1i_roc )

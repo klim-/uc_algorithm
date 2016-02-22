@@ -57,7 +57,7 @@ class SystemStack(object):
         self._vec_x = value
 
         # calculate vec_xdot
-        self.vec_xdot = st.perform_time_derivative(self.vec_x, self.vec_x)
+        self.vec_xdot = st.time_deriv(self.vec_x, self.vec_x)
 
         # vector for differentiation
         self.diffvec_x = st.concat_rows(self.vec_x, self.vec_xdot, self.diff_symbols)
