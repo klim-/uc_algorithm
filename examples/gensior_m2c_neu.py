@@ -7,7 +7,7 @@ import symbtools as st
 C,L,Ld,Rd,Ll,Rl,Ul,U = sp.symbols("C,L,Ld,Rd,Ll,Rl,Ul,U", commutative=True)
 
 vec_x = st.symb_vector('x1:13', commutative=True)
-vec_xdot = st.perform_time_derivative(vec_x, vec_x)
+vec_xdot = st.time_deriv(vec_x, vec_x)
 
 st.make_global(vec_x, 1)
 st.make_global(vec_xdot, 1)

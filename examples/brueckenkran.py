@@ -49,9 +49,9 @@ vec_x = sp.Matrix( sp.symbols("x1:%i" % (n*2 + 1)) )
 theta = vec_x[:n, :]
 mu = vec_x[n:, :]
 
-vec_xdot = st.perform_time_derivative(vec_x, vec_x)
-thetadot = st.perform_time_derivative(theta, vec_x)
-mudot = st.perform_time_derivative(mu, vec_x)
+vec_xdot = st.time_deriv(vec_x, vec_x)
+thetadot = st.time_deriv(theta, vec_x)
+mudot = st.time_deriv(mu, vec_x)
 
 
 

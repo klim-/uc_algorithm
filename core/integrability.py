@@ -44,7 +44,7 @@ class IntegrabilityCheck(object):
         # generate vector with vec_x and its derivatives up to highest_order
         new_vector = self._myStack.vec_x
         for index in xrange(1, highest_order+1):
-            vec_x_ndot = st.perform_time_derivative(self._myStack.vec_x, self._myStack.vec_x, order=index)
+            vec_x_ndot = st.time_deriv(self._myStack.vec_x, self._myStack.vec_x, order=index)
             new_vector = st.concat_rows( new_vector, vec_x_ndot )
 
         # generate basis_1form up to this order

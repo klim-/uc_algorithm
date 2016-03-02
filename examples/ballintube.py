@@ -9,7 +9,7 @@ T_, K_L, K_V, A_B, A_sp, g, K_S, d, m = sp.symbols("T, K_L, K_V, A_B, A_sp, g, K
 x1, x2, x3, x4 = sp.symbols("x1:5")
 vec_x = sp.Matrix([x1, x2, x3, x4])
 
-vec_xdot = st.perform_time_derivative(vec_x, vec_x)
+vec_xdot = st.time_deriv(vec_x, vec_x)
 xdot1, xdot2, xdot3, xdot4 = vec_xdot
 
 F_eq = sp.Matrix([

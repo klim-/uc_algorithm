@@ -7,7 +7,7 @@ import symbtools as st
 C,L,Ld,Rd,Ll,Rl,Ul,U = sp.symbols("C,L,Ld,Rd,Ll,Rl,Ul,U", commutative=True)
 
 xx = vec_x = st.symb_vector('x1:13', commutative=True)
-xxd = vec_xdot = st.perform_time_derivative(vec_x, vec_x)
+xxd = vec_xdot = st.time_deriv(vec_x, vec_x)
 
 st.make_global(vec_x, 1)
 st.make_global(vec_xdot, 1)
@@ -33,7 +33,7 @@ st.make_global(vec_xdot, 1)
 #~ # Algebraische Gleichungen
 #~ eq_alg_a = NSa*F_eq
 
-#~ eq_alg_a_dot = st.perform_time_derivative(eq_alg_a, xx)
+#~ eq_alg_a_dot = st.time_deriv(eq_alg_a, xx)
 
 
 #~ rest_eq = st.nullspaceMatrix(NSa).T*F_eq
@@ -57,7 +57,7 @@ st.make_global(vec_xdot, 1)
 
 #~ # Ableitungen direkt auf 0 setzen (manuelles vereinfachen)
 #~ eq_alg_b = eq_alg_b.subz0(xxd)
-#~ eq_alg_b_dot = st.perform_time_derivative(eq_alg_b, xx)
+#~ eq_alg_b_dot = st.time_deriv(eq_alg_b, xx)
 
 
 #~ # neue Systemgleichungen

@@ -7,7 +7,7 @@ import symbtools as st
 x1, x2 = sp.symbols("x1, x2")
 vec_x = sp.Matrix([x1,x2])
 
-vec_xdot = st.perform_time_derivative(vec_x, vec_x)
+vec_xdot = st.time_deriv(vec_x, vec_x)
 xdot1, xdot2 = vec_xdot
 
 F_eq = sp.Matrix([

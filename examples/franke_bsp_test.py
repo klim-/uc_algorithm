@@ -10,7 +10,7 @@ x2 = st.ExtendedSymbol("x2")
 x3 = st.ExtendedSymbol("x3")
 vec_x = sp.Matrix([x1, x2, x3])
 
-vec_xdot = st.perform_time_derivative(vec_x, vec_x)
+vec_xdot = st.time_deriv(vec_x, vec_x)
 xdot1, xdot2, xdot3 = vec_xdot
 
 F_eq = sp.Matrix([ xdot2-xdot1*xdot3 ])
