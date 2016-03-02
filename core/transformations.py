@@ -18,8 +18,8 @@
 
 import sympy as sp
 import numpy as np
-import symb_tools as st
-import non_commutative_tools as nct
+import symbtools as st
+import symbtools.noncommutativetools as nct
 
 import core.algebra as al
 import util.print_candy as pc

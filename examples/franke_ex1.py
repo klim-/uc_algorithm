@@ -2,12 +2,12 @@
 # enable true divison
 from __future__ import division
 import sympy as sp
-import symb_tools as st
+import symbtools as st
 
-x1, x2, x3, x4, x5 = sp.symbols("x1, x2, x3, x4, x5")
-vec_x = sp.Matrix([x1, x2, x3, x4, x5])
+vec_x = st.symb_vector('x1:6')
+vec_xdot = st.time_deriv(vec_x, vec_x)
 
-vec_xdot = st.perform_time_derivative(vec_x, vec_x)
-xdot1, xdot2, xdot3, xdot4, xdot5 = vec_xdot
+st.make_global(vec_x, 1)
+st.make_global(vec_xdot, 1)
 
 F_eq = sp.Matrix([ xdot1 - x3*x4, xdot2 - x4, xdot3 - x5 ])

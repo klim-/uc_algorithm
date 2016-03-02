@@ -18,7 +18,7 @@
 
 import sympy as sp
 import numpy as np
-import symb_tools as st
+import symbtools as st
 
 from IPython import embed as IPS
 

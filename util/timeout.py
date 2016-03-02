@@ -7,7 +7,7 @@ from time import sleep
 import sympy as sp
 from sympy import sin, cos
 
-import symb_tools as st
+import symbtools as st
 
 
 

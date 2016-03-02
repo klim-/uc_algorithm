@@ -32,7 +32,7 @@ from IPython import embed as IPS
 
 import numpy as np
 import sympy as sp
-import symb_tools as st
+import symbtools as st
 
 import core.algebra as al
 import core.matrix_container as mc

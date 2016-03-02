@@ -18,7 +18,7 @@
 
 import sympy as sp
 import pycartan as ct
-import symb_tools as st
+import symbtools as st
 
 import util.print_candy as pc
 

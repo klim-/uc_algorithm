@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import sympy as sp
-import symb_tools as st
+import symbtools as st
 
 # Differentialgleichung 2. Ordnung:
 #~ sp.Matrix([
@@ -74,7 +74,7 @@ CC[0,2]*=0
 # definitorische Gleichungen
 eq_defin = thetadot - mu
 
-#eq_mech = AA*theta + BB*mu + CC*mudot
+#~ eq_mech = AA*theta + BB*mu + CC*mudot
 eq_mech = AA*theta + BB*thetadot + CC*mudot
 
 # Container um zusätzliche Information über das Beispiel zu speichern

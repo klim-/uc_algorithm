@@ -2,7 +2,7 @@
 # enable true divison
 from __future__ import division
 import sympy as sp
-import symb_tools as st
+import symbtools as st
 
 
 x1 = st.ExtendedSymbol("x1")

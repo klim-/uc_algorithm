@@ -2,7 +2,7 @@
 # enable true divison
 #from __future__ import division
 import sympy as sp
-import symb_tools as st
+import symbtools as st
 
 I1, I2 = sp.symbols("I1, I2")
 m1, m2 = sp.symbols("m1, m2")

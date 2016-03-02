@@ -18,7 +18,7 @@
 
 import numpy as np
 import sympy as sp
-import symb_tools as st
+import symbtools as st
 import pycartan as ct
 
 import core.matrix_container as mc

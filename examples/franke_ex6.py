@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import sympy as sp
-import symb_tools as st
+import symbtools as st
 
 a3 = sp.symbols("a3")
 

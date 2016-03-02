@@ -2,7 +2,7 @@
 # enable true divison
 from __future__ import division
 import sympy as sp
-import symb_tools as st
+import symbtools as st
 
 L, C, U, R = sp.symbols("L, C, U, R")
 

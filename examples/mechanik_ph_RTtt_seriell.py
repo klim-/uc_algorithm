@@ -2,10 +2,10 @@
 import sympy as sp
 import symbtools as st
 
-Ndf = 4  # Anzahl der Freiheitsgrade
-Nin = 3  # Anzahl der Eingänge
+n = 4  # Anzahl der Freiheitsgrade
+nq = 2  # Anzahl der Eingänge
 
-Neq = Ndf - Nin  # Anzahl der mechanischen Gleichungen (ohne definitorische)
+Neq = n - nq  # Anzahl der mechanischen Gleichungen (ohne definitorische)
 
 
 eq_coeffsA = []
@@ -20,11 +20,11 @@ for i in xrange(Neq):
     coeffsC = []
     coeffs = []
     # iterieren über die einzelnen Freiheitsgrade
-    for j in xrange(Ndf):
+    for j in xrange(n):
         # drei Ableitungsordnungen
-        A = sp.Symbol("A%i_%i" % (i + 1, j + 1))
-        B = sp.Symbol("B%i_%i" % (i + 1, j + 1))
-        C = sp.Symbol("C%i_%i" % (i + 1, j + 1))
+        A = sp.Symbol("A%i%i" % (i + 1, j + 1))
+        B = sp.Symbol("B%i%i" % (i + 1, j + 1))
+        C = sp.Symbol("C%i%i" % (i + 1, j + 1))
         
         coeffsA.append(A)
         coeffsB.append(B)
@@ -40,33 +40,69 @@ for i in xrange(Neq):
     all_coeffs.extend(coeffs)
         
 
-diff_symbols = sp.Matrix(all_coeffs)
+
 
 #x1, x2, x3, x4, x5, x6 = sp.symbols("x1, x2, x3, x4, x5, x6")
 
 
-vec_x = sp.Matrix( sp.symbols("x1:%i" % (Ndf*2 + 1)) )
+vec_x = sp.Matrix( sp.symbols("x1:%i" % (n*2 + 1)) )
 
-theta = vec_x[:Ndf, :]
-mu = vec_x[Ndf:, :]
+theta = vec_x[:n, :]
+mu = vec_x[n:, :]
 
 vec_xdot = st.perform_time_derivative(vec_x, vec_x)
 thetadot = st.perform_time_derivative(theta, vec_x)
 mudot = st.perform_time_derivative(mu, vec_x)
 
 
+
+AA = sp.Matrix(eq_coeffsA) # P0
+BB = sp.Matrix(eq_coeffsB) # P1
+CC = sp.Matrix(eq_coeffsC) # P2
+
+
+
+# Informationen über das konkrete System:
+diff_symbols = list(AA[:,:2]) + list(AA[:, -1]) + list(BB[:, 2])
+
+diff_symbols = sp.Matrix(sorted(diff_symbols, key=str))
+
+AA[:,2]*=0
+
+BB[:,:2]*=0
+BB[:,3]*=0
+
+CC[:,2]*=0
+
+CC[:,3]=CC[:,0]
+CC[0,1]=CC[1,0]
+CC[1,1]=CC[1,0]
+
 # definitorische Gleichungen
 eq_defin = thetadot - mu
-
-AA = sp.Matrix(eq_coeffsA)
-BB = sp.Matrix(eq_coeffsB)
-CC = sp.Matrix(eq_coeffsC)
-
 
 #eq_mech = AA*theta + BB*mu + CC*mudot
 eq_mech = AA*theta + BB*thetadot + CC*mudot
 
-F_eq = st.row_stack(eq_defin, eq_mech)
+# Container um zusätzliche Information über das Beispiel zu speichern
+data = st.Container()
+data.P0 = AA
+data.P1 = BB
+data.P2 = CC
+data.eq_mech = eq_mech
+data.time_dep_symbols = diff_symbols
+
+
+F_eq_orig = F_eq = st.row_stack(eq_defin, eq_mech)
+
+
+sys_name = "mechanik_ph_RTtt_seriell"
+
+
+
+#~ from ipHelp import IPS
+#~ IPS()
+
 
 #F_eq = sp.Matrix([
         #[ xdot1 - x4 ],

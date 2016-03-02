@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import sympy as sp
-import symb_tools as st
+import symbtools as st
 
 a0, a1, a2 = sp.symbols("a0, a1, a2")
 b0, b1, b2 = sp.symbols("b0, b1, b2")
