@@ -23,9 +23,3 @@ F_eq = sp.Matrix([
         [ xdot2 - x5 ],
         [ xdot3 - x6 ],
         [ g*sin(x1) + xdot4*x3 + 2*x4*x6 + xdot5*cos(x1)  ]])
-
-
-# Container um zusätzliche Information über das Beispiel zu speichern
-data = st.Container()
-data.F_eq = F_eq
-data.time_dep_symbols = diff_symbols

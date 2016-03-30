@@ -33,6 +33,7 @@ from IPython import embed as IPS
 import numpy as np
 import sympy as sp
 import symbtools as st
+import symbtools.noncommutativetools as nct
 
 import core.algebra as al
 import core.matrix_container as mc
@@ -300,19 +301,23 @@ def main():
 
 
     # store results of the algorithm in pickled data container
-    if hasattr(example, 'data'):
-        data = example.data
-    else:
-        # from file containing the example
-        data = st.Container()
-        data.F_eq = example.F_eq
-        data.vec_x = example.vec_x
-        data.vec_xdot = example.vec_xdot
+    #~ if hasattr(example, 'data'):
+        #~ data = example.data
+    data = st.Container()
+    data.F_eq = nct.make_all_symbols_noncommutative(example.F_eq, "")[0]
+    data.vec_x = nct.make_all_symbols_noncommutative(example.vec_x, "")[0]
+    data.vec_xdot = nct.make_all_symbols_noncommutative(example.vec_xdot, "")[0]
+    data.diff_symbols = nct.make_all_symbols_noncommutative(example.diff_symbols, "")[0]
 
     # add data to be stored here:
-    data.TS_P1 = myStack.transformation.P10
-    data.TS_P0 = myStack.transformation.P00
-    data.Q = myStack.transformation.Q
+    # make symbols in P10 and P00 noncommutative
+    P1 = nct.make_all_symbols_noncommutative(myStack.transformation.P10, "")[0]
+    P0 = nct.make_all_symbols_noncommutative(myStack.transformation.P00, "")[0]
+    s  = sp.Symbol('s', commutative=False)
+    data.P = P1*s+P0
+    data.P1 = P1
+    data.P0 = P0
+    data.Q = nct.make_all_symbols_noncommutative(myStack.transformation.Q, "")[0]
 
     fname = path.replace(".py",".pcl")
     st.pickle_full_dump(data, fname)
