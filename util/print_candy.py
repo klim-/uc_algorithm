@@ -44,7 +44,7 @@ def print_next_iteration(i):
     print "i = " + str(i) + " " + string_line[len(str(i))+5:]
 
 def print_special_case_line():
-    txt = "--- Sonderfall 4.7 "
+    txt = "--- special case "
     print txt + string_line2[len(txt):]
 
 def print_line():

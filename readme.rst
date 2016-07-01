@@ -5,7 +5,7 @@ for nonlinear dynamic systems [1]. For further information on how
 to use this package, see doc/user_guide.pdf.
 
 An example has been implemented in the following IPython Notebook:
-`Gantry crane <http://nbviewer.jupyter.org/github/klim-/uc_algorithm/blob/master/AT_gantry%20crane/brueckenkran.ipynb>`_
+`Gantry crane <http://nbviewer.jupyter.org/github/klim-/uc_algorithm/blob/master/examples/gantry_crane_notebook/brueckenkran.ipynb>`_
 
 
 
