@@ -39,12 +39,12 @@ class Transformation(object):
         self.P10 = self._myStack.get_iteration(0).P1
         self.P00 = self._myStack.get_iteration(0).P0
         self.P = None # P[d/dt]=P0 + P1*(d/dt)
-        self.Q = None # unimodular completion of P[d/dt]
+        self.H = None # unimodular completion of P[d/dt]
         self._w = None # internal variable of corresponding 1form
         self.G = None # G[d/dt]
 
         self.calculate_P_Matrix()
-        self.calculate_Q_matrix()
+        self.calculate_H_matrix()
 
         if myStack.calc_G: self.calculate_G_matrix()
 
@@ -154,31 +154,31 @@ class Transformation(object):
             result = matrix_list[i]*result
         return result
 
-    def calculate_Q_matrix(self):
-        """ unimodular completion of P(d/dt) with Q = P1i * ... * P11 * P10
+    def calculate_H_matrix(self):
+        """ unimodular completion of P(d/dt) with H = P1i * ... * P11 * P10
         """
         pc.print_line()
         print("Exit condition satisfied\n")
 
-        Q_relevant_matrices, Q_tilde_relevant_matrices = self._myStack.get_Q_relevant_matrices()
+        H_relevant_matrices, H_tilde_relevant_matrices = self._myStack.get_H_relevant_matrices()
 
-        Q1 = self.multiply_matrices_in_list( Q_relevant_matrices )
+        H1 = self.multiply_matrices_in_list( H_relevant_matrices )
 
-        if not len(Q_tilde_relevant_matrices)==0:
-            Q2 = self.multiply_matrices_in_list( Q_tilde_relevant_matrices )
+        if not len(H_tilde_relevant_matrices)==0:
+            H2 = self.multiply_matrices_in_list( H_tilde_relevant_matrices )
         else:
-            Q2 = sp.Matrix([])
+            H2 = sp.Matrix([])
 
-        Q = st.concat_rows(Q1, Q2)
+        H = st.concat_rows(H1, H2)
 
-        m, n = Q.shape
-        assert n==len(self._myStack.vec_x), "Dimensions of Q-Matrix do not fit."
+        m, n = H.shape
+        assert n==len(self._myStack.vec_x), "Dimensions of H-Matrix do not fit."
 
-        print "Q-matrix = "
-        pc.print_nicely(Q)
+        print "H-matrix = "
+        pc.print_nicely(H)
         print "\n"
 
-        self.Q = Q
+        self.H = H
 
     def calculate_G_matrix(self):
         G = self.calculate_Gi_matrix(0)

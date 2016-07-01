@@ -92,16 +92,16 @@ class SystemStack(object):
         else:
             return False
 
-    def get_Q_relevant_matrices(self):
+    def get_H_relevant_matrices(self):
         """ All P1i and Zi_lpinv matrices in correct order, so these just have to
-            be multiplied to get Q
+            be multiplied to get H
         """
-        Q_relevant_matrices = []
+        H_relevant_matrices = []
         for i in xrange(self.iteration_steps()):
             P1i = self.iteration_data[i].P1
-            Q_relevant_matrices.append(P1i)
+            H_relevant_matrices.append(P1i)
 
-        Q_tilde_relevant_matrices = []
+        H_tilde_relevant_matrices = []
 
         special_cases = self.get_special_cases()
 
@@ -110,11 +110,11 @@ class SystemStack(object):
             for i in xrange(self.iteration_steps()):
                 if i==special_cases_iteration:
                     Zi_lpinv = self.iteration_data[i].Z_lpinv
-                    Q_tilde_relevant_matrices.append(Zi_lpinv)
+                    H_tilde_relevant_matrices.append(Zi_lpinv)
                 else:
                     P1i = self.iteration_data[i].P1
-                    Q_tilde_relevant_matrices.append(P1i)
+                    H_tilde_relevant_matrices.append(P1i)
         elif self.special_case_in_between(special_cases):
             raise NotImplementedError
 
-        return Q_relevant_matrices, Q_tilde_relevant_matrices
+        return H_relevant_matrices, H_tilde_relevant_matrices

@@ -36,7 +36,7 @@ class IntegrabilityCheck(object):
         # TODO: not the most elegant way?
         # check highest order of derivatives
         highest_order = 0
-        for n in self._myStack.transformation.Q.atoms():
+        for n in self._myStack.transformation.H.atoms():
             if hasattr(n, "difforder"):
                 if n.difforder>highest_order:
                     highest_order = n.difforder
@@ -55,8 +55,8 @@ class IntegrabilityCheck(object):
         self._myStack.basis_1form = basis_1form
 
     def assemble_dual_basis(self):
-        _Q = self._myStack.transformation.Q
-        p1, p2 = _Q.shape
+        _H = self._myStack.transformation.H
+        p1, p2 = _H.shape
 
         l1 = len(self._myStack.basis)
 
@@ -68,7 +68,7 @@ class IntegrabilityCheck(object):
             # initialize with "empty" 1forms
             w_T[j] = 0 * self._myStack.basis_1form[0]
             for i in xrange(p2):
-                w_T[j] = w_T[j] + _Q.row(j)[i] * self._myStack.basis_1form[i]
+                w_T[j] = w_T[j] + _H.row(j)[i] * self._myStack.basis_1form[i]
 
         self._myStack.transformation.w = w_T
 

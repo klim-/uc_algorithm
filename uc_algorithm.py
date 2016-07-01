@@ -296,7 +296,7 @@ def main():
 
         i += 1
 
-    # create transformation and calculate Q and G(d/dt)
+    # create transformation and calculate H and G(d/dt)
     myStack.transformation = tr.Transformation(myStack)
 
 
@@ -318,7 +318,7 @@ def main():
     data.P = P1*s+P0
     data.P1 = P1
     data.P0 = P0
-    data.Q = nct.make_all_symbols_noncommutative(myStack.transformation.Q, "")[0]
+    data.H = nct.make_all_symbols_noncommutative(myStack.transformation.H, "")[0]
 
     fname = path.replace(".py",".pcl")
     st.pickle_full_dump(data, fname)
