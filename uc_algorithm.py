@@ -259,7 +259,7 @@ def main():
     P1i, P0i = tangent_system()
 
     global mode
-    mode = raw_input("Enter \"auto\" for automatic mode, or \"manual\" for manual mode:\n")
+    mode = raw_input("Enter \"manual\" for manual mode or hit enter:\n")
     #####################################################################
 
     i = 0

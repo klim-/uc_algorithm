@@ -17,15 +17,9 @@ g, l = sp.symbols("g, l")
 # Time-dependent symbols
 diff_symbols = sp.Matrix([l])
 
-# Nonlinear system in state space representation 0 = F_eq
+# Nonlinear system in state space representation 0 = F_eq(vec_x, vec_xdot)
 F_eq = sp.Matrix([
         [ xdot1 - x4 ],
         [ xdot2 - x5 ],
         [ xdot3 - x6 ],
         [ g*sin(x1) + xdot4*x3 + 2*x4*x6 + xdot5*cos(x1)  ]])
-
-# Container carrying additional information about the example
-# (will be stored in pickle-file)
-data = st.Container()
-data.F_eq = F_eq
-data.time_dep_symbols = diff_symbols
