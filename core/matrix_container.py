@@ -21,7 +21,7 @@ import util.print_candy as pc
 from IPython import embed as IPS
 
 class IterationStack(object):
-    """ container that carries data for the ith iteration
+    """ Container that carries data for the ith iteration
     """
     def __init__(self, iteration, P1, P0):
         self.i = iteration
@@ -76,7 +76,7 @@ class IterationStack(object):
             return P1_rpinv, P1_roc, B_lpinv, A
 
     def print_stack(self):
-        """ prints all matrices for this iteration
+        """ Prints all matrices for this iteration
         """
         pc.print_next_iteration(self.i)
 
@@ -102,7 +102,7 @@ class IterationStack(object):
             pc.print_matrix("Z", self.i, "_lpinv", self.Z_lpinv)
 
     def print_hint_stack(self):
-        """ prints remaining matrices in case of manual mode
+        """ Prints remaining matrices in case of manual mode
         """
         pc.print_next_iteration(self.i)
         pc.print_matrix("P1", self.i, "_dot", self.P1_dot)

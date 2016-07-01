@@ -158,7 +158,7 @@ class Transformation(object):
         """ unimodular completion of P(d/dt) with Q = P1i * ... * P11 * P10
         """
         pc.print_line()
-        print("Algorithmus am Ende\n")
+        print("Exit condition satisfied\n")
 
         Q_relevant_matrices, Q_tilde_relevant_matrices = self._myStack.get_Q_relevant_matrices()
 

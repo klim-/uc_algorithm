@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-#    Copyright (C) 2015
+#    Copyright (C) 2015-2016
 #    by Klemens Fritzsche, 2e63a67d46@leckstrom.de
 #
 #    This program is free software: you can redistribute it and/or modify

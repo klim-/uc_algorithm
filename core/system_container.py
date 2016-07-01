@@ -26,8 +26,8 @@ import core.matrix_container as mc
 from IPython import embed as IPS
 
 class SystemStack(object):
-    """ container that carries resulting matrizes for the system.
-        no calculations here, just store and access of data
+    """ Container that carries resulting matrizes for the system.
+        No calculations here, just store and access of data
     """
     def __init__(self, diff_symbols):
         self.iteration_data = [] # contains a matrix container for every iteration step (=index)
@@ -93,7 +93,7 @@ class SystemStack(object):
             return False
 
     def get_Q_relevant_matrices(self):
-        """ all P1i and Zi_lpinv matrices in correct order, so these just have to
+        """ All P1i and Zi_lpinv matrices in correct order, so these just have to
             be multiplied to get Q
         """
         Q_relevant_matrices = []
