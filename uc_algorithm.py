@@ -301,13 +301,14 @@ def main():
 
 
     # store results of the algorithm in pickled data container
-    #~ if hasattr(example, 'data'):
-        #~ data = example.data
     data = st.Container()
     data.F_eq = nct.make_all_symbols_noncommutative(example.F_eq, "")[0]
     data.vec_x = nct.make_all_symbols_noncommutative(example.vec_x, "")[0]
     data.vec_xdot = nct.make_all_symbols_noncommutative(example.vec_xdot, "")[0]
     data.diff_symbols = nct.make_all_symbols_noncommutative(example.diff_symbols, "")[0]
+    
+    if hasattr(example, 'user_data'):
+        data.user_data = example.user_data
 
     # add data to be stored here:
     # make symbols in P10 and P00 noncommutative
