@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # enable true divison
-from __future__ import division
+
 import sympy as sp
 import symbtools as st
 

@@ -14,13 +14,13 @@ eq_coeffsC = []
 
 all_coeffs = []
 # iterieren über die Gleichungen
-for i in xrange(Neq):
+for i in range(Neq):
     coeffsA = []
     coeffsB = []
     coeffsC = []
     coeffs = []
     # iterieren über die einzelnen Freiheitsgrade
-    for j in xrange(n):
+    for j in range(n):
         # drei Ableitungsordnungen
         A = sp.Symbol("A%i%i" % (i + 1, j + 1))
         B = sp.Symbol("B%i%i" % (i + 1, j + 1))

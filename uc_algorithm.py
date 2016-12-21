@@ -23,8 +23,6 @@ of Flat Outputs for Nonlinear Control Systems. European Control
 Conference [ECC], 2013).
 """
 
-# enable true divison
-from __future__ import division
 import sys
 import importlib
 
@@ -38,7 +36,6 @@ import symbtools.noncommutativetools as nct
 import core.algebra as al
 import core.matrix_container as mc
 import core.system_container as sc
-import core.integrability as ic
 import core.transformations as tr
 import util.print_candy as pc
 
@@ -68,8 +65,8 @@ auto = None
 myStack = sc.SystemStack(diff_symbols)
 myStack.vec_x = example.vec_x
 myStack.calc_G = calc_G
-print "x ="; pc.print_nicely(myStack.vec_x)
-print "\n\n","xdot ="; pc.print_nicely(myStack.vec_xdot)
+print("x ="); pc.print_nicely(myStack.vec_x)
+print("\n\n","xdot ="); pc.print_nicely(myStack.vec_xdot)
 
 def end_condition(Bi):
     """ The algorithm ends if Bi has full row rank.
@@ -88,7 +85,7 @@ def roc_hint(matrix_string, i,  matrix):
     pc.print_matrix(matrix_string, i, "", matrix)
     while True:
         try:
-            roc = eval(raw_input("Please enter " + str(matrix_string) + str(i) + "_roc or \"auto\":\n"))
+            roc = eval(input("Please enter " + str(matrix_string) + str(i) + "_roc or \"auto\":\n"))
             if roc==auto:
                 roc = al.right_ortho_complement(matrix)
             try:
@@ -96,19 +93,19 @@ def roc_hint(matrix_string, i,  matrix):
                     pc.print_matrix(matrix_string, i, "_roc", roc)
                     return roc
                 else:
-                    print error_string
+                    print(error_string)
             except:
-                print error_string
+                print(error_string)
         except Exception as exc:
-            print exc
-            print error_string
+            print(exc)
+            print(error_string)
 
 def loc_hint(matrix_string, i,  matrix):
     error_string = "There must have been a mistake. Try again.\n"
     pc.print_matrix(matrix_string, i, "", matrix)
     while True:
         try:
-            loc = eval(raw_input("Please enter " + str(matrix_string) + str(i) + "_loc or \"auto\":\n"))
+            loc = eval(input("Please enter " + str(matrix_string) + str(i) + "_loc or \"auto\":\n"))
             if loc==auto:
                 loc = al.left_ortho_complement(matrix)
             try:
@@ -116,12 +113,12 @@ def loc_hint(matrix_string, i,  matrix):
                     pc.print_matrix(matrix_string, i, "_loc", loc)
                     return loc
                 else:
-                    print error_string
+                    print(error_string)
             except:
-                print error_string
+                print(error_string)
         except Exception as exc:
-            print exc
-            print error_string
+            print(exc)
+            print(error_string)
 
 def rpinv_hint(matrix_string, i,  matrix):
     # TODO: check if this can somehow move to the algebra module
@@ -130,7 +127,7 @@ def rpinv_hint(matrix_string, i,  matrix):
     error_string = "There must have been a mistake. Try again.\n"
     while True:
         try:
-            rpinv = eval(raw_input("Please enter " + str(matrix_string) + str(i) + "_rpinv or \"auto\":\n"))
+            rpinv = eval(input("Please enter " + str(matrix_string) + str(i) + "_rpinv or \"auto\":\n"))
             if rpinv==auto:
                 rpinv = al.right_pseudo_inverse(matrix)
             try:
@@ -138,12 +135,12 @@ def rpinv_hint(matrix_string, i,  matrix):
                     pc.print_matrix(matrix_string, i, "_rpinv", rpinv)
                     return rpinv
                 else:
-                    print error_string
+                    print(error_string)
             except:
-                print error_string
+                print(error_string)
         except Exception as exc:
-            print exc
-            print error_string
+            print(exc)
+            print(error_string)
 
 def lpinv_hint(matrix_string, i,  matrix):
     # TODO: check if this can somehow move to the algebra module
@@ -152,7 +149,7 @@ def lpinv_hint(matrix_string, i,  matrix):
     error_string = "There must have been a mistake. Try again.\n"
     while True:
         try:
-            lpinv = eval(raw_input("Please enter " + str(matrix_string) + str(i) + "_lpinv or \"auto\":\n"))
+            lpinv = eval(input("Please enter " + str(matrix_string) + str(i) + "_lpinv or \"auto\":\n"))
             if lpinv==auto:
                 lpinv = al.left_pseudo_inverse(matrix)
             try:
@@ -160,12 +157,12 @@ def lpinv_hint(matrix_string, i,  matrix):
                     pc.print_matrix(matrix_string, i, "_lpinv", lpinv)
                     return lpinv
                 else:
-                    print error_string
+                    print(error_string)
             except:
-                print error_string
+                print(error_string)
         except Exception as exc:
-            print exc
-            print error_string
+            print(exc)
+            print(error_string)
 
 def reduction(iter_stack):
     P1i = iter_stack.P1
@@ -244,12 +241,12 @@ def tangent_system():
     try:
         P1i # in case the system is given by the matrices P1i and P0i
     except NameError:
-        print "\n\n0 = F(x,xdot) ="; pc.print_nicely(example.F_eq)
+        print("\n\n0 = F(x,xdot) ="); pc.print_nicely(example.F_eq)
 
         P1i = example.F_eq.jacobian(myStack.vec_xdot)
         P0i = example.F_eq.jacobian(myStack.vec_x)
 
-    print "\n\n"
+    print("\n\n")
     return P1i, P0i
     
 
@@ -259,7 +256,12 @@ def main():
     P1i, P0i = tangent_system()
 
     global mode
-    mode = raw_input("Enter \"manual\" for manual mode or hit enter:\n")
+
+    # raw_input was removed in python3
+    if sys.version_info[0] == 2:
+        mode = raw_input("Enter \"manual\" for manual mode or hit enter:\n")
+    elif sys.version_info[0] == 3:
+        mode = input("Enter \"manual\" for manual mode or hit enter:\n")
     #####################################################################
 
     i = 0
@@ -328,13 +330,14 @@ def main():
     # for testing
     try:
         import pycartan as ct
+        import core.integrability as ic
         global w
         myIntegrabilityCheck = ic.IntegrabilityCheck(myStack)
         w = myStack.transformation.w
     except Exception as exc:
-        print exc
+        print(exc)
 
-    print "Data saved to ", fname, "\n"
+    print("Data saved to ", fname, "\n")
     pc.print_line()
 
 if __name__ == '__main__':

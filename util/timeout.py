@@ -59,8 +59,8 @@ def get_timed_simplify(t):
             result = timeout_exception_simplify(expr, **kwargs)
         except TimeoutError:
             result = expr
-            print "simplification stopped for expr.count_ops:"
-            print st.count_ops(expr)
+            print("simplification stopped for expr.count_ops:")
+            print(st.count_ops(expr))
         return result
         
     return wrapper
@@ -77,10 +77,10 @@ if __name__ == "__main__":
     simplify3 = get_timed_simplify(3)
     simplify1 = get_timed_simplify(1)
 
-    print expr
-    print sp.simplify(expr)
-    print simplify3(expr)
-    print simplify1(expr)
+    print(expr)
+    print(sp.simplify(expr))
+    print(simplify3(expr))
+    print(simplify1(expr))
 
 
     
@@ -89,7 +89,7 @@ if 0:
     def long_running_function(n):
         for i in range(n):
             sleep(.5)
-            print i
+            print(i)
 
             
     long_running_function(8)

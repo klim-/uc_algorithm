@@ -43,7 +43,7 @@ class IntegrabilityCheck(object):
 
         # generate vector with vec_x and its derivatives up to highest_order
         new_vector = self._myStack.vec_x
-        for index in xrange(1, highest_order+1):
+        for index in range(1, highest_order+1):
             vec_x_ndot = st.time_deriv(self._myStack.vec_x, self._myStack.vec_x, order=index)
             new_vector = st.concat_rows( new_vector, vec_x_ndot )
 
@@ -64,10 +64,10 @@ class IntegrabilityCheck(object):
         # matrices, so a list will hold the entries of the column vector w:
         # create list with length p1 (p1 rows)
         w_T = [0] * p1
-        for j in xrange(p1):
+        for j in range(p1):
             # initialize with "empty" 1forms
             w_T[j] = 0 * self._myStack.basis_1form[0]
-            for i in xrange(p2):
+            for i in range(p2):
                 w_T[j] = w_T[j] + _H.row(j)[i] * self._myStack.basis_1form[i]
 
         self._myStack.transformation.w = w_T
@@ -78,17 +78,17 @@ class IntegrabilityCheck(object):
         return True if (w[i].d).is_zero() else False
 
     def integrate_dwi(self, w, i):
-        print "------"
-        print "w[" + str(i) + "].d = 0"
-        print "------"
-        print "<-> Integrability condition satisfied for w[" + str(i) + "].\n\n"
-        print "Integrating w[" + str(i) + "]:"
+        print("------")
+        print("w[" + str(i) + "].d = 0")
+        print("------")
+        print("<-> Integrability condition satisfied for w[" + str(i) + "].\n\n")
+        print("Integrating w[" + str(i) + "]:")
         y=0
-        for j in xrange(0,len(self._myStack.basis)):
+        for j in range(0,len(self._myStack.basis)):
             y += sp.integrate(w[i].coeff[j], self._myStack.basis[j])
-        print "y[" + str(i) + "] ="
+        print("y[" + str(i) + "] =")
         pc.print_nicely(y)
-        print "\n\n"
+        print("\n\n")
 
     def is_dwi_wedge_wi_zero(self, w, i):
         """ checks if dw_i^w_i=0
@@ -107,8 +107,8 @@ class IntegrabilityCheck(object):
         xx = self._myStack.vec_x
         
         mu = sp.Function('mu')(*xx)
-        for k in xrange(1, n-1):
-            for l in xrange(k+1, n):
+        for k in range(1, n-1):
+            for l in range(k+1, n):
                 pde =   a[l-1]*mu.diff(xx[k-1]) - a[k-1]*mu.diff(xx[l-1]) +\
                         mu*a[l-1].diff(xx[k-1]) - mu*a[k-1].diff(xx[l-1])
                 pde_list.append(pde)
@@ -117,7 +117,7 @@ class IntegrabilityCheck(object):
     def is_dwi_wedge_wi_wedge_wj_zero(self, w, i):
         """ checks if dw_i^w_i^w_j=0 for some j
         """
-        for j in xrange(len(w)):
+        for j in range(len(w)):
             if (not j==i) and (w[i].d^w[i]^w[j]).is_zero():
                 return j
         return False
@@ -136,8 +136,8 @@ class IntegrabilityCheck(object):
         
         mu1 = sp.Function('mu_1')(*xx)
         mu2 = sp.Function('mu_2')(*xx)
-        for k in xrange(1, n-1):
-            for l in xrange(k+1, n):
+        for k in range(1, n-1):
+            for l in range(k+1, n):
                 pde =   a[l-1]*mu1.diff(xx[k-1]) - a[k-1]*mu1.diff(xx[l-1]) +\
                         mu1*a[l-1].diff(xx[k-1]) - mu1*a[k-1].diff(xx[l-1]) +\
                         b[l-1]*mu2.diff(xx[k-1]) - b[k-1]*mu2.diff(xx[l-1]) +\
@@ -153,17 +153,17 @@ class IntegrabilityCheck(object):
         """
         w = self._myStack.transformation.w
         #~ j = len(w)
-        for i in xrange(len(w)):
+        for i in range(len(w)):
             if self.is_dwi_zero(w, i):
                 self.integrate_dwi(w, i)
             elif self.is_dwi_wedge_wi_zero(w,i):
-                print "------"
-                print "w[" + str(i) + "].d^w[" + str(i) + "] = 0"
-                print "------"
-                print "resp."
-                print "du=0 for u=mu1*w["+str(i)+"]"
-                print "<-> Integrability condition satisfied for w[" + str(i) + "].\n\n"
-                var = raw_input("Type \"pde\" to calculate PDE-conditions for mu1\n")
+                print("------")
+                print("w[" + str(i) + "].d^w[" + str(i) + "] = 0")
+                print("------")
+                print("resp.")
+                print("du=0 for u=mu1*w["+str(i)+"]")
+                print("<-> Integrability condition satisfied for w[" + str(i) + "].\n\n")
+                var = input("Type \"pde\" to calculate PDE-conditions for mu1\n")
                 if var=="pde":
                     pde_list = self.find_pde_dwi_wedge_wi(w,i)
                     pc.print_pde_list(pde_list)
@@ -171,17 +171,17 @@ class IntegrabilityCheck(object):
             #       returns integer or False)
             elif self.is_dwi_wedge_wi_wedge_wj_zero(w, i)!=False:
                 j = self.is_dwi_wedge_wi_wedge_wj_zero(w, i)
-                print "------"
-                print "w[" + str(i) + "].d^w[" + str(i) + "]^w[" + str(j) +"] = 0"
-                print "------"
-                print "resp."
-                print "du=0 for u=mu1*w["+str(i)+"] + mu2*w["+str(j)+"]"
-                print "<-> Integrability condition satisfied for w[" + str(i) + "].\n\n"
-                var = raw_input("Type \"pde\" to calculate PDE-conditions for mu1 and mu2\n")
+                print("------")
+                print("w[" + str(i) + "].d^w[" + str(i) + "]^w[" + str(j) +"] = 0")
+                print("------")
+                print("resp.")
+                print("du=0 for u=mu1*w["+str(i)+"] + mu2*w["+str(j)+"]")
+                print("<-> Integrability condition satisfied for w[" + str(i) + "].\n\n")
+                var = input("Type \"pde\" to calculate PDE-conditions for mu1 and mu2\n")
                 if var=="pde":
                     pde_list = self.find_pde_dwi_wedge_wi_wedge_wj(w,i,j)
                     pc.print_pde_list(pde_list)
             else:
-                print "------"
-                print "Integrability condition not satisfied for w[" + str(i) + "]. Please try manually."
-                print "------\n\n"
+                print("------")
+                print("Integrability condition not satisfied for w[" + str(i) + "]. Please try manually.")
+                print("------\n\n")

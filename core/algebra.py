@@ -96,7 +96,7 @@ def get_column_index_of_matrix(matrix, column):
         the column index.
     """
     m1, n1 = matrix.shape
-    for index in xrange(n1):
+    for index in range(n1):
         if matrix.col(index)==column:
             return index
     return None
@@ -107,7 +107,7 @@ def remove_zero_columns(matrix):
     m, n = matrix.shape
     M = sp.Matrix([])
 
-    for i in xrange(n):
+    for i in range(n):
         if not is_zero_matrix(matrix.col(i)):
             M = st.concat_cols(M, matrix.col(i))
     return M
@@ -126,7 +126,7 @@ def is_linearly_independent(matrix, column_vector):
 def matrix_to_vectorlist(matrix):
     m, n = matrix.shape
     vectors = []
-    for i in xrange(n):
+    for i in range(n):
         vectors.append(matrix.col(i))
     return vectors
 
@@ -137,7 +137,7 @@ def count_zero_entries(vector):
     # check if zeros exist, if so: count them
     atoms = vector.atoms()
     if 0 in atoms:
-        for i in xrange(len(vector)):
+        for i in range(len(vector)):
             if vector[i]==0:
                 number+=1
     return number
@@ -145,7 +145,7 @@ def count_zero_entries(vector):
 def nr_of_ops(vector):
     m = vector.shape[0]
     ops = 0
-    for i in xrange(m):
+    for i in range(m):
         ops += vector[i].count_ops()
     return ops
 
@@ -202,7 +202,7 @@ def reshape_matrix_columns(P):
 
     # pick m suitable column vectors and add to new matrix A: ----------
     A = colvecs_sorted[0]
-    for j in xrange(len(colvecs_sorted)-1):
+    for j in range(len(colvecs_sorted)-1):
         column = colvecs_sorted[j+1]
         if is_linearly_independent(A,column):
             A = st.concat_cols(A,column)
@@ -216,7 +216,7 @@ def reshape_matrix_columns(P):
     #R_tilde = sp.Matrix([])
     used_cols = []
     R = sp.Matrix([])
-    for k in xrange(m1):
+    for k in range(m1):
         new_column_index = k
         old_column_index = get_column_index_of_matrix(P,A.col(k))
         used_cols.append(old_column_index)
@@ -230,7 +230,7 @@ def reshape_matrix_columns(P):
     # remainder columns of R matrix
     #m2,n2 = R_tilde.shape
     m2,n2 = R.shape
-    for l in xrange(n0):
+    for l in range(n0):
         if l not in used_cols:
             R_col = sp.zeros(n0,1)
             R_col[l] = 1
@@ -243,7 +243,7 @@ def reshape_matrix_columns(P):
     # calculate B matrix: ----------------------------------------------
     B = sp.Matrix([])
     tmp = P*R
-    for i in xrange(n0-m0):
+    for i in range(n0-m0):
         B = st.concat_cols(B,tmp.col(m0+i))
 
     
@@ -319,7 +319,7 @@ def Zi_left_pinv_with_restrictions(P1i_rpinv, P1i_tilde_roc, Zi):
 
     m, n = Zi.shape
     Zi_left_pinv = sp.Matrix([])
-    for i in xrange(m-n,m):
+    for i in range(m-n,m):
         Zi_left_pinv = st.concat_rows(Zi_left_pinv,C_inv.row(i))
 
     o, p = Zi_left_pinv.shape
@@ -342,7 +342,7 @@ def is_symbolically_zero_matrix(matrix):
 def is_zero_matrix(matrix):
     m_rand = st.subs_random_numbers(matrix, prime=srn_prime)
 
-    for i in xrange(len(m_rand)):
+    for i in range(len(m_rand)):
         if not np.allclose(float(m_rand[i]), 0):
             return False
     return True
@@ -359,7 +359,7 @@ def is_unit_matrix(matrix):
     m, n = matrix.shape
     m_rand = st.subs_random_numbers(matrix, prime=srn_prime)
 
-    for i in xrange(len(m_rand)):
+    for i in range(len(m_rand)):
         if i%(m+1)==0:
             if not np.allclose(float(m_rand[i]), 1):
                 return False

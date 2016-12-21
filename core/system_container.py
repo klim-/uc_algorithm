@@ -19,7 +19,6 @@
 import numpy as np
 import sympy as sp
 import symbtools as st
-import pycartan as ct
 
 import core.matrix_container as mc
 
@@ -80,7 +79,7 @@ class SystemStack(object):
     def get_special_cases(self):
         #~ counter = 0
         special_cases = [0]*self.iteration_steps() # list [0,0,0,...,1,..,0] (1:=special_case)
-        for i in xrange(self.iteration_steps()):
+        for i in range(self.iteration_steps()):
             if self.iteration_data[i].is_special_case == True:
                 #~ counter += 1
                 special_cases[i] = 1
@@ -97,7 +96,7 @@ class SystemStack(object):
             be multiplied to get H
         """
         H_relevant_matrices = []
-        for i in xrange(self.iteration_steps()):
+        for i in range(self.iteration_steps()):
             P1i = self.iteration_data[i].P1
             H_relevant_matrices.append(P1i)
 
@@ -107,7 +106,7 @@ class SystemStack(object):
 
         if special_cases.count(1) == 1:
             special_cases_iteration = special_cases.index(1)
-            for i in xrange(self.iteration_steps()):
+            for i in range(self.iteration_steps()):
                 if i==special_cases_iteration:
                     Zi_lpinv = self.iteration_data[i].Z_lpinv
                     H_tilde_relevant_matrices.append(Zi_lpinv)

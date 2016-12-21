@@ -81,8 +81,8 @@ class Transformation(object):
         new_symbols = [sp.Symbol(s.name.replace("x","z"), commutative=False)
                        for s in nc_symbols]
 
-        tup_list = zip(nc_symbols, new_symbols)
-        return expr.subs(zip(nc_symbols, new_symbols))
+        tup_list = list(zip(nc_symbols, new_symbols))
+        return expr.subs(list(zip(nc_symbols, new_symbols)))
 
     def convert_to_nc_matrices(self, *args):
         """ Converts commutative symbols x with non commutative symbols z
@@ -111,8 +111,8 @@ class Transformation(object):
         new_symbols = [sp.Symbol(s.name.replace("z","x"), commutative=True)
                        for s in nc_symbols]
 
-        tup_list = zip(new_symbols, nc_symbols)
-        return expr.subs(zip(nc_symbols, new_symbols))
+        tup_list = list(zip(new_symbols, nc_symbols))
+        return expr.subs(list(zip(nc_symbols, new_symbols)))
 
     def all_nc(self, matrix):
         """ checks if matrix is fully non commutative
@@ -127,7 +127,7 @@ class Transformation(object):
         m,n = matrix.shape
         matrix_shifted = sp.Matrix([])
         t_dep_symbols = [symb for symb in st.atoms(matrix, sp.Symbol) if not symb == s]
-        for i in xrange(n):
+        for i in range(n):
             col = matrix.col(i)
             col_shifted = sp.Matrix([nct.right_shift_all(expr,s,t, t_dep_symbols) for expr in col])
             matrix_shifted = st.concat_cols(matrix_shifted, col_shifted)
@@ -150,7 +150,7 @@ class Transformation(object):
 
     def multiply_matrices_in_list(self, matrix_list):
         result = matrix_list[0]
-        for i in xrange(1, len(matrix_list)):
+        for i in range(1, len(matrix_list)):
             result = matrix_list[i]*result
         return result
 
@@ -174,20 +174,20 @@ class Transformation(object):
         m, n = H.shape
         assert n==len(self._myStack.vec_x), "Dimensions of H-Matrix do not fit."
 
-        print "H-matrix = "
+        print("H-matrix = ")
         pc.print_nicely(H)
-        print "\n"
+        print("\n")
 
         self.H = H
 
     def calculate_G_matrix(self):
         G = self.calculate_Gi_matrix(0)
-        for i in xrange(self._myStack.iteration_steps()-1):
+        for i in range(self._myStack.iteration_steps()-1):
             G = G*self.calculate_Gi_matrix(i+1)
 
         G_shifted = self.right_shift_all_in_matrix(G)
 
-        print "G-matrix = "
+        print("G-matrix = ")
         pc.print_nicely(G_shifted)
 
         self.G = G_shifted

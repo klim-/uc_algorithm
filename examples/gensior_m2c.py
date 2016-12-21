@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # enable true divison
-from __future__ import division
+
 import sympy as sp
 from sympy import sin,cos,tan
 import symbtools as st
