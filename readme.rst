@@ -1,7 +1,7 @@
 General Information
 ===================
 Implementation of an algorithm for determining differential flat ouputs
-for nonlinear dynamic systems [1]. For further information on how
+for nonlinear dynamic systems [1,2]. For further information on how
 to use this package, see doc/user_guide.pdf.
 
 An example has been implemented in the following IPython Notebook:
@@ -9,8 +9,8 @@ An example has been implemented in the following IPython Notebook:
 
 
 
-[1] Franke/Röbenack: On the Computation of Flat Outputs for Nonlinear
-Control Systems. European Control Conference [ECC], 2013
+[1] M. Franke and K. Röbenack: "On the Computation of Flat Outputs for Nonlinear Control Systems". In European Proc. of  the European Control Conference (ECC), Zurich, July 2013, p. 167-172 (https://ieeexplore.ieee.org/document/6669771/)
+[2] K. Fritzsche, M. Franke, C. Knoll and K. Röbenack: "Zur systematischen Bestimmung flacher Ausgänge nichtlinearer Mehrgrößensysteme". In at - Automatisierungstechnik, 64(12), 2016, pp. 948-960, doi:10.1515/auto-2016-0079
 
 
 Installation
